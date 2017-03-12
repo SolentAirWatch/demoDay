@@ -1,5 +1,6 @@
 .svn/
-
+2_sensor*
+*.db
 
 # Logs
 logs

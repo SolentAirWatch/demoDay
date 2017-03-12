@@ -1,0 +1,156 @@
+<html>
+<head>
+	<title>charts</title>
+	<style type="text/css">
+
+	html, body { margin:0; padding:0; }
+	.container {
+		width: 100vw;
+		height: 100vh;
+	}
+
+	.ppm {
+		width: 100vw;
+		height: 60vh;
+	}
+
+	.bottom {
+		width: 100vw;
+		height: 40vh;
+		display: flex;
+	}
+
+	.temperature, .pressure {
+		width: 50vw;
+	}
+
+	</style>
+</head>
+<body>
+	<div id="status"></div>
+
+	<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.5.0/Chart.bundle.min.js"></script>
+
+	<div class="container">
+		<div class="ppm">
+			<canvas id="ppm" width="400" height="400"></canvas>
+		</div>
+		<div class="bottom">
+			<div class="temperature">
+				<canvas id="temperature" width="400" height="400"></canvas>
+			</div>
+			<div class="pressure">
+				<canvas id="pressure" width="400" height="400"></canvas>
+			</div>
+		</div>
+	</div>
+
+
+<script>
+	function make_chart(id) {
+		return new Chart(id, {
+		    type: 'line',
+		    data: {
+		        datasets: []
+		    },
+		    options: {
+		        scales: {
+		            xAxes: [{
+		                type: 'time'
+		                // position: 'bottom'
+		            }]
+		        },
+		        maintainAspectRatio: false
+		    }
+		});
+	}
+
+	var ppmChart = make_chart("ppm");
+	var tempChart = make_chart("temperature");
+	var presChart = make_chart("pressure");
+	var charts = [ppmChart, tempChart, presChart];
+
+</script>
+
+<script src="/socket.io/socket.io.js"></script>
+<script>
+
+  var color = {
+  	'NO2WE':'#16a085',
+  	'NO2AE':'#9b59b6',
+  	'SO2WE':'#d35400',
+  	'SO2AE':'#c0392b',
+  	'TEMP': '#2c3e50',
+  	'PRES': '#f1c40f'
+  }
+
+  var chart_for = {
+  	'NO2WE': ppmChart,
+  	'NO2AE': ppmChart,
+  	'SO2WE': ppmChart,
+  	'SO2AE': ppmChart,
+  	'TEMP': tempChart,
+  	"PRES": presChart
+  }
+
+  var socket = io();
+  socket.on("connect", function(){
+  	console.log("connected")
+  	document.getElementById('status').innerHTML="connected"
+  });
+
+  socket.on("disconnect", function(){
+  	console.log("disconnected")
+  	document.getElementById('status').innerHTML="disconnected"
+  });
+
+  socket.on("initial_data", function(initial_data) {
+  	console.log("received initial data", initial_data);
+  	charts.every(function(c) { c.data.datasets=[]; return true; });
+
+  	['NO2WE', 'NO2AE', 'SO2WE', 'SO2AE', 'TEMP', 'PRES'].every(function(name) {
+	  	var something_else = initial_data.map(function(d) { return { x:d.timestamp, y:d[name]}; })
+	  	var myChart = chart_for[name];
+		myChart.data.datasets.push({
+  			data: something_else,
+  			label: name,
+  			borderColor: color[name],
+  			backgroundColor: "transparent"
+  		})
+  		return true;
+  	});
+
+  	charts.every(function(c) { c.update(500,false); return true; });
+  });
+
+  socket.on("update_data", function(message) {
+  	console.log("received data update", message);
+
+  	['NO2WE', 'NO2AE', 'SO2WE', 'SO2AE', 'TEMP', 'PRES'].every(function(name) {
+
+  		var new_point = { x: message.timestamp, y: message[name] };
+
+  		var myChart = chart_for[name];
+
+  		// find dataset
+  		var datasetIndex = myChart.data.datasets.findIndex(function(dataset) {
+  			return dataset.label == name;
+  		});
+
+  		// remove first point
+  		myChart.data.datasets[datasetIndex].data = myChart.data.datasets[datasetIndex].data.slice(1);
+
+  		// add a new point
+  		myChart.data.datasets[datasetIndex].data.push(new_point);
+
+  		return true;
+  	});
+
+  	charts.every(function(c) { c.update(500,false); return true; });
+  });
+
+</script>
+
+
+</body>
+</html>
