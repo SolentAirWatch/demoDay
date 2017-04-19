@@ -81,7 +81,8 @@
   	'SO2WE':'#d35400',
   	'SO2AE':'#c0392b',
   	'TEMP': '#2c3e50',
-  	'PRES': '#f1c40f'
+  	'PRES': '#f1c40f',
+  	'PM2.5': '#F48FB1'
   }
 
   var chart_for = {
@@ -90,7 +91,8 @@
   	'SO2WE': ppmChart,
   	'SO2AE': ppmChart,
   	'TEMP': tempChart,
-  	"PRES": presChart
+  	"PRES": presChart,
+  	"PM2.5": ppmchart
   }
 
   var socket = io();
@@ -126,7 +128,7 @@
   socket.on("update_data", function(message) {
   	console.log("received data update", message);
 
-  	['NO2WE', 'NO2AE', 'SO2WE', 'SO2AE', 'TEMP', 'PRES'].every(function(name) {
+  	['NO2WE', 'NO2AE', 'SO2WE', 'SO2AE', 'TEMP', 'PRES', ].every(function(name) {
 
   		var new_point = { x: message.timestamp, y: message[name] };
 

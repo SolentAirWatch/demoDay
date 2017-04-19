@@ -2,30 +2,17 @@
 
 var PORT = 33333;
 var HOST = '0.0.0.0';
-var HTTP_PORT = 80;
+var HTTP_PORT = 8000;
 
 var dgram = require('dgram');
 var server = dgram.createSocket('udp4');
 
 var sqlite3 = require('sqlite3').verbose();
-var db = new sqlite3.Database('test.db');
+var db = new sqlite3.Database('five_pm_only.db');
 
 var sensorDataSchema = {
-    "a4": {
-        "NO2WE": "double", // plot
-        "NO2AE": "double", // plot
-        "SO2WE": "double", // plot
-        "SO2AE": "double", // plot
-        "TEMP": "double", // plot
-        "VREF": "double",
-        "SO2_ppb": "double",
-        "NO2_ppb": "double" // plot
-    },
-    "bmp": {
-        "TEMP": "double",
-        "PRES": "double" // plot
-    },
     "pm": {
+        "_sid": "integer", // sensor ID, 1,2,3,4,5
         "PM10": "double",
         "PM25_CF1": "double",
         "PM100_CF1": "double",
@@ -100,28 +87,31 @@ var io = require('socket.io')(http);
 // var plotlySender = new plotlyhelper.MessageSender(messageKeys, plotly_filename_prefix);
 
 app.get('/', function(req, res) {
-    res.sendFile(__dirname + '/public/bigchart.html');
+    res.sendFile(__dirname + '/public/server2index.html');
 });
 
 io.on('connection', function(socket) {
     console.log('a user connected', socket.id);
 
     for (var table in sensorDataSchema) {
-        var query = "select * from " + table + " order by timestamp DESC limit 10";
-        db.all(query, (function(table) {
-            return function(err, rows) {
-                if (err) {
-                    // do something
-                    console.error("Error getting", table, "initial data.", err);
-                    return;
+        var query = "select * from " + table + " WHERE `_sid`=$_sid ORDER BY timestamp DESC LIMIT 1";
+        var sids = [1,2,3,4,5];
+        for (var s in sids) {
+            db.all(query, {$_sid: sids[s]}, (function(table) {
+                return function(err, rows) {
+                    if (err) {
+                        // do something
+                        console.error("Error getting", table, "initial data.", err);
+                        return;
+                    }
+                    console.log("Sending", table, "initial data to", socket.id);
+                    rows = rows.sort(function(a, b) {
+                        return new Date(a.timestamp).getTime() > new Date(b.timestamp).getTime()
+                    });
+                    socket.emit("initial_data_"+table, rows);
                 }
-                console.log("Sending", table, "initial data to", socket.id);
-                rows = rows.sort(function(a, b) {
-                    return new Date(a.timestamp).getTime() > new Date(b.timestamp).getTime()
-                });
-                socket.emit("initial_data_"+table, rows);
-            }
-        })(table));
+            })(table));
+        }
     }
 
 });
@@ -146,17 +136,20 @@ var parseMessage = function(message) {
 
 var sendToBrowsers = function(message) {
     var _type = message._type;
-
+    console.log("sending to browsers", message);
     var simple_message = {};
     for (var property in message) {
         var p = property;
         // remove $ prefix, leave _ prefix alone
+        console.log(p, typeof p);
+        console.log("sw", p.startsWith)
+
         if (p.startsWith("$")) {
             p = p.slice(1);
             simple_message[p] = message[property]
         }
     }
-
+    simple_message._sid = message._sid;
     io.emit("update_"+_type, simple_message);
 }
 
@@ -167,6 +160,8 @@ var filter$only = function(message) {
             clean[field] = message[field];
         }
     }
+    // every message must have a _sid (sensor ID)
+    clean.$_sid = message._sid;
     return clean;
 }
 
@@ -177,34 +172,12 @@ var udp_on_message = function(message, remote) {
         return;
     }
 
-    if (message._type == "a4") {
-        sendToBrowsers(message);
-        var query = queries.a4;
-        var cleanMsg = filter$only(message);
-        db.run(query, cleanMsg, function(error) {
-            if (error) {                
-                console.log("a4: An erorr while inserting:", error);                
-                return            
-            }
-            console.log("a4: row inserted successfully.");
-        });
-    } else if (message._type == "bmp") {
-        sendToBrowsers(message);
-        var query = queries.bmp;
-        var cleanMsg = filter$only(message);
-        db.run(query, cleanMsg, function(error) {
-            if (error) {                
-                console.log("bpm: An erorr while inserting:", error);                
-                return            
-            }
-            console.log("bpm: row inserted successfully.");
-        });
-    } else if (message._type == "pm") {
+    if (message._type == "pm") {
         sendToBrowsers(message);
         var query = queries.pm;
         var cleanMsg = filter$only(message);
         console.log("Running query", query);
-        console.log("With data", message);
+        console.log("With data", cleanMsg);
         db.run(query, cleanMsg, function(error) {
             if (error) {                
                 console.log("pm: An erorr while inserting:", error);                

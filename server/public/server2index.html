@@ -1,0 +1,146 @@
+<html>
+
+<head>
+	<title>charts</title>
+	<style type="text/css">
+		html,
+		body {
+			margin: 0;
+			padding: 0;
+		}
+
+		.container {
+			width: 100vw;
+			height: 100vh;
+			display: flex;
+		}
+
+		.sensors-circle {
+			position: relative;
+			width:300px;
+			height:300px;
+			margin:auto;
+		}
+
+		.sensor {
+			width: 0px;
+			height: 0px;
+			position: absolute;
+			top: 50%;
+			left: 50%;
+			border: solid 10px;
+			border-radius: 50%;
+		}
+
+		/* comment this out to display the colour choices */
+		#gradient {
+			display: none;
+		}
+
+		#status { position: fixed; }
+	</style>
+</head>
+
+<body>
+	<div id="status"></div>
+
+	<div class="container">
+		<div class="sensors-circle" id="sensors-circle">
+		</div>
+	</div>
+
+	<canvas width="100" height="10" id="gradient"></canvas>
+
+	<script>
+		var plottableSensorData = {
+			"pm": {
+				"PM25_STD": {
+					"displayName": "Particulate Matter 2.5"
+				}
+			}
+		}
+
+
+		var number_of_sensors = 5;
+		var gradient, ctx = undefined;
+
+		window.addEventListener("load", function() {
+			var container = document.getElementById("sensors-circle");
+			var deg = -90;
+			var degstep = 72;
+			for (var i=1;i<=number_of_sensors;i++) {
+				var div = document.createElement("div");
+				div.className = "sensor";
+				div.id="sensor-"+i;
+				div.style = "transform: rotate("+deg+"deg) translate(150px) rotate("+deg+"deg);"
+				deg+=degstep;
+				container.appendChild(div);
+			}
+
+			// draw a gradient to pick colour from
+			gradient = document.getElementById("gradient");
+			ctx = gradient.getContext("2d");
+			g = ctx.createLinearGradient(0,0,100,0);
+			g.addColorStop(0, '#2ecc71');
+			g.addColorStop(0.5, '#e67e22');
+			g.addColorStop(1, '#c0392b');
+			ctx.fillStyle = g;
+			ctx.fillRect(0,0,100,10);
+		});
+
+		// pick colours from gradient
+		// value is 0 for green and 1 for red, 0.5 for carrot, and anythig in between.
+		function getColour(value) {
+			console.log("color vor value",value,Math.round(value*ctx.canvas.width));
+			console.log("color vor value",value,Math.round(value*ctx.canvas.width));
+			var x = Math.round(value*ctx.canvas.width);
+			x = Math.min(x, 99); // at most last col of gradient
+			x = Math.max(x, 0);  // at laest the first col of gradient
+			var data = ctx.getImageData(x,0,1,1).data;
+			return "rgba("+data.join(",")+")";
+		}
+
+	</script>
+
+	<script src="/socket.io/socket.io.js"></script>
+	<script>
+		var socket = io();
+		socket.on("connect", function() {
+			console.log("connected")
+			document.getElementById('status').innerHTML = "connected"
+		});
+
+		socket.on("disconnect", function() {
+			console.log("disconnected")
+			document.getElementById('status').innerHTML = "disconnected"
+		});
+
+		// message is an object, e.g. {timestamp: "2017-03-12", etc...}
+		function processStreamData(sensor_name, message) {
+			console.log("processStreamData");
+			var sensor = document.getElementById("sensor-"+message._sid);
+			var col = getColour(message["PM25_STD"]/40);
+			console.log("Drawing", message._sid, "in", col);
+			sensor.style.borderColor = col;
+		}
+
+		socket.on("initial_data_pm", function(message) {
+			console.log("initial data pm", message);
+			if (message.length > 0) {
+				// this should only contain one message (or none)
+				// just to be sure, take the latest one available
+				processStreamData("pm", message[message.length-1]);
+			}
+		});
+
+		socket.on("update_pm", function(message) {
+			console.log("update pm", message);
+			processStreamData("pm", message);
+		});
+
+	</script>
+
+
+</body>
+
+</html>
