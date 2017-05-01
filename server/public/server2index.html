@@ -9,9 +9,36 @@
 			padding: 0;
 		}
 
-		.container {
+		.title {
+			text-align: center;
+		}
+
+		.page-container {
 			width: 100vw;
 			height: 100vh;
+			display: flex;
+			flex-direction: column;
+		}
+
+		.container {
+			display: flex;
+			flex: 1;
+		}
+
+		.left-col {
+			display: flex;
+			flex: 1;
+			flex-direction: column;
+		}
+
+		.right-col {
+			flex: 1;
+			display: flex;
+			flex-direction: column;
+		}
+
+		.chart {
+			flex: 1;
 			display: flex;
 		}
 
@@ -32,9 +59,26 @@
 			border-radius: 50%;
 		}
 
+		.sensor span {
+			display: inline-block;
+			position: relative;
+			top: 10px;
+			left: -5px;
+			font-weight: bold;
+		}
+
+		.sensor-number-txt {
+			margin: auto;
+			font-size: 2em;
+		}
+
 		/* comment this out to display the colour choices */
 		#gradient {
 			display: none;
+		}
+
+		.chartcanvas {
+			flex: 1;
 		}
 
 		#status { position: fixed; }
@@ -44,12 +88,44 @@
 <body>
 	<div id="status"></div>
 
-	<div class="container">
-		<div class="sensors-circle" id="sensors-circle">
+	<div class="page-container">
+		<div class="title">
+			<h1>Solent Air Watch</h1>
+			<h2>PM2.5 Live Data - Demonstration</h2>
 		</div>
+		<div class="container">
+			<div class="left-col">
+				<div class="sensors-circle" id="sensors-circle">
+				</div>
+				<div style="text-align: center;">
+					<h3>Title under sensors</h3>
+					<p>Text under sensors</p>
+					<p>Second paragraph under sensors</p>
+				</div>
+			</div>
+			<div class="right-col" id="charts-container">
+
+			</div>
+		</div>
+	</div>
+	<div style="margin: 10px;">
+		<h1>More content if needed</h1>
+		<p>bla bla bla</p>
+
+		<h2>Settings</h2>
+
+		<div>Draw scale factor <input type="number" id="drawScalingFactorInput" value="" /></div>
+		<div>Max data points for a chart <input type="number" id="maxDataPointsInChartsInput" value="" /></div>
+
+		<p><small>New settings are used on new data.</small></p>
+
+
 	</div>
 
 	<canvas width="100" height="10" id="gradient"></canvas>
+
+
+	<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.5.0/Chart.bundle.min.js"></script>
 
 	<script>
 		var plottableSensorData = {
@@ -60,8 +136,71 @@
 			}
 		}
 
+		var drawScalingFactor = 40;
+
+		var maxDataPointsInCharts = 10;
+
+		window.addEventListener("load", function() {
+			var settingsFor = ["drawScalingFactor", "maxDataPointsInCharts"];
+			for (var i in settingsFor) {
+				var s = settingsFor[i];
+				var input = document.getElementById(s+"Input");
+				input.value = window[s];
+				input.addEventListener("change", (function(s) {
+					return function(e) {
+						e.preventDefault();
+						var val = e.target.value;
+						window[s] = val;
+					}
+				})(s));
+			}
+		});
 
 		var number_of_sensors = 5;
+
+		function make_chart(id) {
+			var chart = new Chart(id, {
+				type: 'line',
+				data: {
+					datasets: []
+				},
+				options: {
+					scales: {
+						xAxes: [{
+							type: 'time',
+							ticks: {
+								autoSkip: false,
+								maxRotation: 0,
+								minRotation: 0
+							},
+							// position: 'bottom'
+							time: {
+								displayFormats: {
+									'millisecond': 'HH:MM:SS',
+									'second': 'HH:MM:SS',
+									'minute': 'HH:MM:SS',
+									'hour': 'HH:MM:SS',
+									'day': 'HH:MM:SS',
+									'week': 'HH:MM:SS',
+									'month': 'HH:MM:SS',
+									'quarter': 'HH:MM:SS',
+									'year': 'HH:MM:SS'
+								}
+							}
+						}],
+					},
+					maintainAspectRatio: false,
+					animation: false,
+					legend: { display: false }
+				}
+			});
+			chart.name = id;
+			chart.buffers = [];
+			return chart;
+		}
+
+		var pmChartBySid = {};
+
 		var gradient, ctx = undefined;
 
 		window.addEventListener("load", function() {
@@ -72,8 +211,11 @@
 				var div = document.createElement("div");
 				div.className = "sensor";
 				div.id="sensor-"+i;
-				div.style = "transform: rotate("+deg+"deg) translate(150px) rotate("+deg+"deg);"
+				div.style = "transform: rotate("+deg+"deg) translate(150px) rotate("+(-deg)+"deg);"
 				deg+=degstep;
+				var label = document.createElement("span");
+				label.innerText = i.toString();
+				div.appendChild(label);
 				container.appendChild(div);
 			}
 
@@ -86,13 +228,41 @@
 			g.addColorStop(1, '#c0392b');
 			ctx.fillStyle = g;
 			ctx.fillRect(0,0,100,10);
+
+			// make pm charts by sid
+			var chartsContainer = document.getElementById("charts-container");
+			for (var i=1;i<=number_of_sensors;i++) {
+				var el = document.createElement("div");
+				el.className="chart";
+
+				// sensor ID text
+				var txt = document.createElement("div");
+				txt.className = "sensor-number-txt";
+				txt.innerText = i;
+				el.appendChild(txt);
+
+				// canvas
+				var canvas = document.createElement("canvas");
+				el.appendChild(canvas);
+				canvas.className="chartcanvas";
+				canvas.id = "sensor-canvas-"+i;
+				chartsContainer.appendChild(el);
+			}
+
+			for (var i=1;i<=number_of_sensors;i++) {
+				pmChartBySid[i] = {
+					"chart": make_chart("sensor-canvas-"+i),
+					"domid": "sensor-canvas-"+i,
+					"dataset": null,
+					"timeout": null,
+					"name": "PM "+i
+				}
+			}
 		});
 
 		// pick colours from gradient
 		// value is 0 for green and 1 for red, 0.5 for carrot, and anythig in between.
 		function getColour(value) {
-			console.log("color vor value",value,Math.round(value*ctx.canvas.width));
-			console.log("color vor value",value,Math.round(value*ctx.canvas.width));
 			var x = Math.round(value*ctx.canvas.width);
 			x = Math.min(x, 99); // at most last col of gradient
 			x = Math.max(x, 0);  // at laest the first col of gradient
@@ -116,27 +286,138 @@
 		});
 
 		// message is an object, e.g. {timestamp: "2017-03-12", etc...}
-		function processStreamData(sensor_name, message) {
-			console.log("processStreamData");
+		function processStreamDataDraw(sensor_name, message) {
 			var sensor = document.getElementById("sensor-"+message._sid);
-			var col = getColour(message["PM25_STD"]/40);
-			console.log("Drawing", message._sid, "in", col);
+			var col = getColour(message["PM25_STD"]/drawScalingFactor);
 			sensor.style.borderColor = col;
 		}
 
-		socket.on("initial_data_pm", function(message) {
-			console.log("initial data pm", message);
+		socket.on("initial_data_pm", function(sid, message) {
 			if (message.length > 0) {
-				// this should only contain one message (or none)
-				// just to be sure, take the latest one available
-				processStreamData("pm", message[message.length-1]);
+				// take latest for drawing
+				processStreamDataDraw("pm", message[message.length-1]);
+				processInitialDataChart("pm", sid, message);
 			}
 		});
 
 		socket.on("update_pm", function(message) {
-			console.log("update pm", message);
-			processStreamData("pm", message);
+			// draw data
+			processStreamDataDraw("pm", message);
+
+			// add data to charts
+			processStreamDataChart("pm", message);
 		});
+
+		// to adapt
+
+		// message is an array of objects, e.g. [{timestamp: "2017-03-12", etc...}, ...]
+		function processInitialDataChart(sensor_name, sid, message) {
+			var sensor = plottableSensorData[sensor_name];
+			var sids_to_update = [];
+			for (var readingName in sensor) {
+				var dataXy = message.map(function(d) {
+					return {x: d.timestamp, y: d[readingName]};
+				});
+				sids_to_update.push(sid);
+				var dataset = getOrCreateDataset(sensor_name, sid, readingName);
+				dataset.data = dataXy;
+			}
+
+			// update all charts
+			done = {};
+			sids_to_update.every(function(sid) {
+				if (done[sid]) { return true; }
+				done[sid] = true;
+				pmChartBySid[sid].chart.update(200, false);
+				return true;
+			});
+		}
+
+		function processStreamDataChart(sensor_name, message) {
+
+			var sensor = plottableSensorData[sensor_name];
+			for (var readingName in sensor) {
+				getOrCreateDataset(sensor_name, message._sid, readingName);
+				var datapoint = {x: message.timestamp, y: message[readingName]};
+				addDataPoint(sensor_name, message._sid, readingName, datapoint);
+			}
+		}
+
+		function addDataPoint(sensorName, sid, readingName, point) {
+			var cfg = pmChartBySid[sid];
+			cfg.buffer.push(point);
+			requestRender(cfg);
+		}
+
+		function requestRender(cfg) {
+			// update all charts
+			if (cfg.timeout !== null) {
+				// do nothing, there's a timeout already
+				return
+			}
+
+			// there is no timeout, so set one
+			cfg.timeout = setTimeout(function(){
+				console.log("rendering", cfg.name, cfg);
+
+				var chart = cfg.chart;
+
+				var buffer = cfg.buffer;
+				var dataset = cfg.dataset;
+
+				var data = dataset.data.slice();
+				for (var j in buffer) {
+					data.push(buffer[j]);
+				}
+
+				buffer.length = 0;
+				if (data.length > maxDataPointsInCharts) {
+					data = data.slice(data.length - maxDataPointsInCharts);
+				}
+
+				dataset.data = data;
+
+				chart.update(0, false);
+				cfg.timeout = null;
+
+			}, 500);
+		}
+
+		// chart is a chart object, sensor_name is "bmp", "pm" or "a4",
+		// stream_name is for example "PM25_STD"
+		function getOrCreateDataset(sensor_name, sid, stream_name) {
+			var cfg = pmChartBySid[sid];
+			var chart = cfg.chart;
+
+			if (cfg.dataset !== undefined && cfg.dataset !== null) {
+				return cfg.dataset;
+			}
+
+			// for (var i in chart.data.datasets) {
+			// 	var dts = chart.data.datasets[i];
+			// 	if (dts.label == stream_name) {
+			// 		return chart.data.datasets[i];
+			// 	}
+			// }
+
+			// if not found (didn't return in the for loop)
+			var dts = {
+				data: [],
+				label: cfg.displayName || stream_name,
+				borderColor: cfg.color || "#000000",
+				backgroundColor: "transparent",
+				bezierCurve : false,
+				fill: false,
+				lineTension: 0,
+				cubicInterpolationMode: "monotone"
+			};
+
+			cfg.dataset = dts;
+			cfg.buffer = [];
+			chart.data.datasets.push(dts);
+			return dts;
+		}
+
 
 	</script>
 

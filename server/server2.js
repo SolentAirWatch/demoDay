@@ -8,7 +8,7 @@ var dgram = require('dgram');
 var server = dgram.createSocket('udp4');
 
 var sqlite3 = require('sqlite3').verbose();
-var db = new sqlite3.Database('five_pm_only.db');
+var db = new sqlite3.Database('five_pm_only_tmp.db');
 
 var sensorDataSchema = {
     "pm": {
@@ -94,23 +94,23 @@ io.on('connection', function(socket) {
     console.log('a user connected', socket.id);
 
     for (var table in sensorDataSchema) {
-        var query = "select * from " + table + " WHERE `_sid`=$_sid ORDER BY timestamp DESC LIMIT 1";
+        var query = "select * from " + table + " WHERE `_sid`=$_sid ORDER BY timestamp DESC LIMIT 10";
         var sids = [1,2,3,4,5];
         for (var s in sids) {
-            db.all(query, {$_sid: sids[s]}, (function(table) {
+            db.all(query, {$_sid: sids[s]}, (function(table, sid) {
                 return function(err, rows) {
                     if (err) {
                         // do something
                         console.error("Error getting", table, "initial data.", err);
                         return;
                     }
-                    console.log("Sending", table, "initial data to", socket.id);
+                    console.log("Sending", table, sid, "initial data to", socket.id);
                     rows = rows.sort(function(a, b) {
                         return new Date(a.timestamp).getTime() > new Date(b.timestamp).getTime()
                     });
-                    socket.emit("initial_data_"+table, rows);
+                    socket.emit("initial_data_"+table, sid, rows);
                 }
-            })(table));
+            })(table, sids[s]));
         }
     }
 
