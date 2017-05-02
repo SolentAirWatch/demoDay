@@ -91,16 +91,16 @@
 	<div class="page-container">
 		<div class="title">
 			<h1>Solent Air Watch</h1>
-			<h2>PM2.5 Live Data - Demonstration</h2>
+			<h2>Live Demonstration - PM2.5</h2>
 		</div>
 		<div class="container">
 			<div class="left-col">
 				<div class="sensors-circle" id="sensors-circle">
 				</div>
 				<div style="text-align: center;">
-					<h3>Title under sensors</h3>
-					<p>Text under sensors</p>
-					<p>Second paragraph under sensors</p>
+					<h3></h3>
+					<p></p>
+					<p></p>
 				</div>
 			</div>
 			<div class="right-col" id="charts-container">
@@ -108,9 +108,9 @@
 			</div>
 		</div>
 	</div>
-	<div style="margin: 10px;">
-		<h1>More content if needed</h1>
-		<p>bla bla bla</p>
+	<div style="text-align: center;"> /*"margin: 10px;">*/
+		<h1><br /><br /><br /></h1>
+		<p></p>
 
 		<h2>Settings</h2>
 
@@ -138,7 +138,7 @@
 
 		var drawScalingFactor = 40;
 
-		var maxDataPointsInCharts = 10;
+		var maxDataPointsInCharts = 100;
 
 		window.addEventListener("load", function() {
 			var settingsFor = ["drawScalingFactor", "maxDataPointsInCharts"];
@@ -188,6 +188,13 @@
 								}
 							}
 						}],
+						yAxes: [{
+			           			display: true,
+            						ticks: {
+                						beginAtZero: true,   // minimum value will be 0. 
+								suggestedMax: 2000
+							}
+						}]
 					},
 					maintainAspectRatio: false,
 					animation: false,
