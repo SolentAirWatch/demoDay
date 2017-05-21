@@ -17,6 +17,8 @@ CREATE TABLE if not exists bmp (
 	id INTEGER PRIMARY KEY AUTOINCREMENT,
 	timestamp datetime,
 	PRES double
+	HUMID double
+	TEMP double
 )
 
 CREATE TABLE if not exists pm (
