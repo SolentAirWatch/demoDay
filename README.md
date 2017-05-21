@@ -1,4 +1,4 @@
 # data_server
 
 
- Server used for sensor demonstrations moved to /demo folder 
+ Javascript based server used for sensor demonstrations moved to /demo folder
