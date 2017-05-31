@@ -24,13 +24,13 @@
 			display: flex;
 			flex: 1;
 		}
-
+/*
 		.left-col {
 			display: flex;
 			flex: 1;
 			flex-direction: column;
 		}
-
+*/
 		.right-col {
 			flex: 1;
 			display: flex;
@@ -87,7 +87,6 @@
 
 <body>
 	<div id="status"></div>
-
 	<div class="page-container">
 		<div class="title">
 			<h1>Solent Air Watch</h1>
@@ -108,7 +107,7 @@
 			</div>
 		</div>
 	</div>
-	<div style="text-align: center;"> /*"margin: 10px;">*/
+	<div style="text-align: center;"> <!--"margin: 10px;">-->
 		<h1><br /><br /><br /></h1>
 		<p></p>
 
@@ -128,6 +127,7 @@
 	<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.5.0/Chart.bundle.min.js"></script>
 
 	<script>
+		
 		var plottableSensorData = {
 			"pm": {
 				"PM25_STD": {
@@ -156,7 +156,7 @@
 			}
 		});
 
-		var number_of_sensors = 5;
+		var number_of_sensors = 2;
 
 		function make_chart(id) {
 			var chart = new Chart(id, {
@@ -209,33 +209,7 @@
 		var pmChartBySid = {};
 
 		var gradient, ctx = undefined;
-
 		window.addEventListener("load", function() {
-			var container = document.getElementById("sensors-circle");
-			var deg = -90;
-			var degstep = 72;
-			for (var i=1;i<=number_of_sensors;i++) {
-				var div = document.createElement("div");
-				div.className = "sensor";
-				div.id="sensor-"+i;
-				div.style = "transform: rotate("+deg+"deg) translate(150px) rotate("+(-deg)+"deg);"
-				deg+=degstep;
-				var label = document.createElement("span");
-				label.innerText = i.toString();
-				div.appendChild(label);
-				container.appendChild(div);
-			}
-
-			// draw a gradient to pick colour from
-			gradient = document.getElementById("gradient");
-			ctx = gradient.getContext("2d");
-			g = ctx.createLinearGradient(0,0,100,0);
-			g.addColorStop(0, '#2ecc71');
-			g.addColorStop(0.5, '#e67e22');
-			g.addColorStop(1, '#c0392b');
-			ctx.fillStyle = g;
-			ctx.fillRect(0,0,100,10);
-
 			// make pm charts by sid
 			var chartsContainer = document.getElementById("charts-container");
 			for (var i=1;i<=number_of_sensors;i++) {
@@ -255,7 +229,6 @@
 				canvas.id = "sensor-canvas-"+i;
 				chartsContainer.appendChild(el);
 			}
-
 			for (var i=1;i<=number_of_sensors;i++) {
 				pmChartBySid[i] = {
 					"chart": make_chart("sensor-canvas-"+i),
@@ -267,6 +240,7 @@
 			}
 		});
 
+/*
 		// pick colours from gradient
 		// value is 0 for green and 1 for red, 0.5 for carrot, and anythig in between.
 		function getColour(value) {
@@ -276,7 +250,7 @@
 			var data = ctx.getImageData(x,0,1,1).data;
 			return "rgba("+data.join(",")+")";
 		}
-
+*/
 	</script>
 
 	<script src="/socket.io/socket.io.js"></script>
@@ -302,14 +276,18 @@
 		socket.on("initial_data_pm", function(sid, message) {
 			if (message.length > 0) {
 				// take latest for drawing
-				processStreamDataDraw("pm", message[message.length-1]);
+				
+				//no circles any more
+				//processStreamDataDraw("pm", message[message.length-1]); 
+				
 				processInitialDataChart("pm", sid, message);
 			}
 		});
 
 		socket.on("update_pm", function(message) {
 			// draw data
-			processStreamDataDraw("pm", message);
+			//no circles any more
+			//processStreamDataDraw("pm", message);
 
 			// add data to charts
 			processStreamDataChart("pm", message);
@@ -341,7 +319,7 @@
 		}
 
 		function processStreamDataChart(sensor_name, message) {
-
+		//update the charts
 			var sensor = plottableSensorData[sensor_name];
 			for (var readingName in sensor) {
 				getOrCreateDataset(sensor_name, message._sid, readingName);
