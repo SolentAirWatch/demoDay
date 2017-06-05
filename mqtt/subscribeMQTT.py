@@ -6,6 +6,8 @@ import datetime
 
 broker = "46.101.13.195"
 # broker = "mqtt.opensensors.io"
+# pwd = "xxxx"
+# username = "solentairwatch" 
 
 ## this section is based on code from https://eclipse.org/paho/clients/python
 
@@ -21,7 +23,7 @@ def on_message(client, userdata, msg):
     print(msg.topic+" "+str(msg.payload))
 
 client = mqtt.Client(client_id="6423")
-client.username_pw_set("solentairwatch", password="aLmgqJPH")
+# client.username_pw_set(username, password=pwd)
 
 # set call back functions
 client.on_connect = on_connect
