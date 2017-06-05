@@ -39,25 +39,23 @@ ts = 1
 while True:
     x = 20 + (20*np.sin(2*np.pi*t*0.01)) # generate a 0.01Hz sinewave between 0 and 40
     message = {
-          'id': 'SOTON0001',
-          'cityName': "Southampton",
-          'stationName': "Common#1",
-          'latitude': monitorLocation[0],
-          'longitude': monitorLocation[1],
-          'pollutants': [
-              {
-                  'pol': 'PM2.5',
-                  'unit': 'mg/m3',
-                  'time': str(datetime.datetime.now()),
-                  'value': x,
-                  'averaging': 'raw'
-              }
-          ]
-       }
+            'id': 'SOTON0001',
+            'cityName': "Southampton",
+            'stationName': "Common#1",
+            'latitude': monitorLocation[0],
+            'longitude': monitorLocation[1],
+#          'pollutants': [
+            'PM10': 0,
+            'PM1': 0,
+            'PM2.5': x,
+            'time': str(datetime.datetime.now()),
+            'averaging': 0
+        }
+#          ]
+#       }
     t = t+ts # time update
     time.sleep(ts)
-    print(message)
     client.publish("/orgs/solentairwatch/sniffy", payload=json.dumps(message), qos=0, retain=False)
-   
+    print(json.dumps(message))
      
     

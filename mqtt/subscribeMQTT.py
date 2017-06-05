@@ -1,11 +1,12 @@
 import paho.mqtt.client as mqtt
-import numpy as np
 import json
-import time
-import datetime
+import sqlite3
+from pprint import pprint # makes data more pretty
 
 broker = "46.101.13.195"
 # broker = "mqtt.opensensors.io"
+DB_Name =  "airwatchData.db"
+global cursor
 
 ## this section is based on code from https://eclipse.org/paho/clients/python
 
@@ -14,14 +15,24 @@ def on_connect(client, userdata, rc):
     print("Connected with result code "+str(rc))
     # Subscribing in on_connect() means that if we lose the connection and
     # reconnect then subscriptions will be renewed.
-    client.subscribe("/orgs/solentairwatch/sniffy", qos=1)
+    client.subscribe("/orgs/solentairwatch/sniffy", qos=0)
+    
 
 # The callback for when a PUBLISH message is received from the server.
 def on_message(client, userdata, msg):
-    print(msg.topic+" "+str(msg.payload))
-
+    data = json.loads(msg.payload.decode('utf-8'))
+    pprint(data)
+    # parse the data to the sql database, prob a way to do directly from JSON, this works though
+    cursor.execute('''INSERT INTO users(sid, timestmp, latitude, longitude, PM10, PM25, PM1)
+                  VALUES(?,?,?,?)''', (data["id"], data["time"], data["latitude"], data["longitude"], data["PM10"], data["PM2.5"], data["PM1"], ))
+    db.commit()
+    
 client = mqtt.Client(client_id="6423")
-client.username_pw_set("solentairwatch", password="aLmgqJPH")
+db = sqlite3.connect(DB_Name)
+
+cursor = db.cursor()
+
+#client.username_pw_set("solentairwatch", password="aLmgqJPH")
 
 # set call back functions
 client.on_connect = on_connect
@@ -37,6 +48,4 @@ client.connect(broker)
 client.loop_forever()
 
 
-
-
-
+db.close() # this will never be executed because of the forever loop - need some exit logic
