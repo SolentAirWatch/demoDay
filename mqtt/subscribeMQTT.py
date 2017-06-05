@@ -31,7 +31,7 @@ db = sqlite3.connect(DB_Name)
 
 cursor = db.cursor()
 
-#client.username_pw_set("solentairwatch", password="aLmgqJPH")
+#client.username_pw_set("solentairwatch", password="xxxx")
 
 # set call back functions
 client.on_connect = on_connect
