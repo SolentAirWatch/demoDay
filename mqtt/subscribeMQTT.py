@@ -21,9 +21,9 @@ def on_connect(client, userdata, rc):
 def on_message(client, userdata, msg):
     data = json.loads(msg.payload.decode('utf-8'))
     pprint(data)
-    # parse the data to the sql database, prob a way to do directly from JSON, this works though
+    # parse the data to the sql database
     cursor.execute('''INSERT INTO users(sid, timestmp, latitude, longitude, PM10, PM25, PM1)
-                  VALUES(?,?,?,?)''', (data["id"], data["time"], data["latitude"], data["longitude"], data["PM10"], data["PM2.5"], data["PM1"], ))
+                  VALUES(?,?,?,?,?,?,?)''', (data["id"], data["time"], data["latitude"], data["longitude"], data["PM10"], data["PM2.5"], data["PM1"], ))
     db.commit()
     
 client = mqtt.Client(client_id="6423")
