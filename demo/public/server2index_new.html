@@ -131,6 +131,7 @@ var drawScalingFactor = 40;
 
 var maxDataPointsInCharts = 100;
 
+//this code sets up a listener to update settings from the textbox
 window.addEventListener("load", function() {
   var settingsFor = ["drawScalingFactor", "maxDataPointsInCharts"];
   for (var i in settingsFor) {
@@ -149,7 +150,56 @@ window.addEventListener("load", function() {
 
 var number_of_sensors = 2;
 
+//this code makes a seperate chart for each id.
 function make_chart(id) {
+  var chart = new Chart(id, {
+    type: 'line',
+    data: {
+      datasets: []
+    },
+    options: {
+      scales: {
+	xAxes: [{
+	  type: 'time',
+	  ticks: {
+	    autoSkip: false,
+	    maxRotation: 0,
+	    minRotation: 0
+	  },
+	  // position: 'bottom'
+	  time: {
+	    displayFormats: {
+	      'millisecond': 'HH:MM:SS',
+	      'second': 'HH:MM:SS',
+	      'minute': 'HH:MM:SS',
+	      'hour': 'HH:MM:SS',
+	      'day': 'HH:MM:SS',
+	      'week': 'HH:MM:SS',
+	      'month': 'HH:MM:SS',
+	      'quarter': 'HH:MM:SS',
+	      'year': 'HH:MM:SS'
+	    }
+	  }
+	}],
+	yAxes: [{
+	  display: true,
+	  ticks: {
+	    beginAtZero: true,// minimum value will be 0. 
+	    suggestedMax: 2000
+	  }
+	}]
+      },
+      maintainAspectRatio: false,
+      animation: false,
+      legend: { display: false }
+    }
+  });
+  chart.name = id;
+  chart.buffers = [];
+  return chart;
+}
+
+function add_to_chart(id) {
   var chart = new Chart(id, {
     type: 'line',
     data: {
@@ -199,18 +249,25 @@ function make_chart(id) {
 
 var pmChartBySid = {};
 
+
+
+
 var gradient, ctx = undefined;
 window.addEventListener("load", function() {
   // make pm charts by sid
   var chartsContainer = document.getElementById("charts-container");
-  for (var i=1;i<=number_of_sensors;i++) {
+
+  //each chart gets a div with text etc
+  //for loop here is replaced so only get one copy
+
+  for (var i=1;i<=1;i++) {
     var el = document.createElement("div");
     el.className="chart";
 
     // sensor ID text
     var txt = document.createElement("div");
     txt.className = "sensor-number-txt";
-    txt.innerText = i;
+    txt.innerText = West Quay;
     el.appendChild(txt);
 
     // canvas
@@ -220,28 +277,36 @@ window.addEventListener("load", function() {
     canvas.id = "sensor-canvas-"+i;
     chartsContainer.appendChild(el);
   }
-  for (var i=1;i<=number_of_sensors;i++) {
-    pmChartBySid[i] = {
-"chart": make_chart("sensor-canvas-"+i),
-"domid": "sensor-canvas-"+i,
-"dataset": null,
-"timeout": null,
-"name": "PM "+i
+    //this code makes a chart for each sensor
+	/*
+
+var eventUrl = new EventSource("https://realtime.opensensors.io/v1/events/users/{user-id}/topics?token=XXXXXXXXXXXXX");
+eventUrl.onmessage = function(event) {
+  document.getElementById("result").innerHTML += event.data;
+}
+*/ 
+    for (var i=1;i<=1;i++) {
+      pmChartBySid[i] = {
+	"chart": make_chart("sensor-canvas-"+i),
+	"domid": "sensor-canvas-"+i,
+	"dataset": null,
+	"timeout": null,
+	"name": "PM "+i
+      }
     }
-  }
 });
 
 /*
 // pick colours from gradient
 // value is 0 for green and 1 for red, 0.5 for carrot, and anythig in between.
- function getColour(value) {
-var x = Math.round(value*ctx.canvas.width);
-x = Math.min(x, 99); // at most last col of gradient
-x = Math.max(x, 0);// at laest the first col of gradient
-var data = ctx.getImageData(x,0,1,1).data;
-return "rgba("+data.join(",")+")";
- }
- */
+function getColour(value) {
+  var x = Math.round(value*ctx.canvas.width);
+  x = Math.min(x, 99); // at most last col of gradient
+  x = Math.max(x, 0);// at laest the first col of gradient
+  var data = ctx.getImageData(x,0,1,1).data;
+  return "rgba("+data.join(",")+")";
+}
+  */
     </script>
 
     <script src="/socket.io/socket.io.js"></script>
