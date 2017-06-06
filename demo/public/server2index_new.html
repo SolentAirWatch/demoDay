@@ -289,12 +289,17 @@ data_server    // sensor ID text
 });
 //set up the event listener
 
-  var eventUrl = new EventSource("https://realtime.opensensors.io/v1/events/users/solentairwatch/topics?token=eyJhbGciOiJBMjU2S1ciLCJ0eXAiOiJKV0UiLCJlbmMiOiJBMTI4R0NNIn0.YYh_XuolLV50b0SobLzn6vXEuUkXOWDo.U1b-xdIgKxycTCEp.xAn6QRoSmFm94fZ8sMMB2FByzsKNVjlGT_AKPwiBSK2c73UWSpYMo730gp22v8hvccABl4R2nug0o9Dfz7lOKXZ_j3GINy4CRumrrycGc1jnqynOCaKWf4FzqTjcdLiGTcB-i06jvfV_J06T-oMQIVUHgiOfwh-ThTgHQ-_uyJDDomKlbz196gGcjRl_LaAQkL5_ZWWblrhHgc6YNFY.BoU3HQAOjOYwwWc_9cfv-w");
+var firstevent = 1;
+var eventUrl = new EventSource("https://realtime.opensensors.io/v1/events/users/solentairwatch/topics?token=eyJhbGciOiJBMjU2S1ciLCJ0eXAiOiJKV0UiLCJlbmMiOiJBMTI4R0NNIn0.YYh_XuolLV50b0SobLzn6vXEuUkXOWDo.U1b-xdIgKxycTCEp.xAn6QRoSmFm94fZ8sMMB2FByzsKNVjlGT_AKPwiBSK2c73UWSpYMo730gp22v8hvccABl4R2nug0o9Dfz7lOKXZ_j3GINy4CRumrrycGc1jnqynOCaKWf4FzqTjcdLiGTcB-i06jvfV_J06T-oMQIVUHgiOfwh-ThTgHQ-_uyJDDomKlbz196gGcjRl_LaAQkL5_ZWWblrhHgc6YNFY.BoU3HQAOjOYwwWc_9cfv-w");
 eventUrl.onmessage = function(event) {
-console.log(event.data);
+  if ( firstevent ) {
+    //this code runs if this is the first event
+    firstevent = 0;
+  } else {
+    //update data
+  }
 }
 
-    //this code makes a chart for each sensor
 /*
 // pick colours from gradient
 // value is 0 for green and 1 for red, 0.5 for carrot, and anythig in between.
