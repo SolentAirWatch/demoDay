@@ -12,35 +12,40 @@ topic = "/orgs/solentairwatch/sniffy"
 # broker  = "46.101.13.195" # test broker
 monitorID = 1
 monitorLocation = [50.9262, -1.4092]
+global t
+global ts
 
 def on_connect(client, userdata, rc):
-    
-	if rc != 0:
-		pass
-		print("Unable to connect to MQTT Broker...")
-	else:
-		print("Connected with MQTT Broker: " + str(MQTT_Broker))
+    print("Connected with result code "+str(rc))
+    # Subscribing in on_connect() means that if we lose the connection and
+    # reconnect then subscriptions will be renewed.
+    pass
+#          ]
+#       }
+
 
 def on_publish(client, userdata, mid):
     print(mid)
-    print('published a message')   
+    print('published a message')   	
     pass
-		
+        
 def on_disconnect(client, userdata, rc):
-    if rc !=0:
-        pass
+    print('disconected with code' +str(rc))
         
 client = mqtt.Client(client_id="6435")
 client.username_pw_set("solentairwatch", password="IFwwJ6vO")
-client.max_inflight_messages_set(20)
+
+# set MQTT call back functions
 client.on_connect = on_connect
 client.on_publish = on_publish
-client.connect(broker)
-
+client.connect(broker) # (address, port, timeout (sec) )
 t = 0
 ts = 1
+client.loop()
+
 while True:
-    x = 20 + (20*np.sin(2*np.pi*t*0.01)) # generate a 0.01Hz sinewave between 0 and 40
+    x = np.random.randn()#20 + (20*np.sin(2*np.pi*t*0.01)) # generate a 0.01Hz sinewave between 0 and 40
+    time.sleep(1)
     message = {
             'id': 'SOTON0001',
             'cityName': "Southampton",
@@ -54,11 +59,8 @@ while True:
             'time': str(datetime.datetime.now()),
             'averaging': 0
         }
-#          ]
-#       }
-    t = t+ts # time update
-    time.sleep(ts)
     client.publish(topic, payload=json.dumps(message), qos=0, retain=False)
-    print(json.dumps(message))
+    client.loop()
+#print(json.dumps(message))
      
     

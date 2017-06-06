@@ -7,15 +7,14 @@ from pprint import pprint # makes data more pretty
 broker = "mqtt.opensensors.io"
 DB_Name =  "airwatchData.db"
 global cursor
-## this section is based on code from https://eclipse.org/paho/clients/python
 
+## this section is based on code from https://eclipse.org/paho/clients/python
 # The callback for when the client receives a CONNACK response from the server.
 def on_connect(client, userdata, rc):
     print("Connected with result code "+str(rc))
     # Subscribing in on_connect() means that if we lose the connection and
     # reconnect then subscriptions will be renewed.
     client.subscribe("/orgs/solentairwatch/sniffy", qos=0)
-    
 
 # The callback for when a PUBLISH message is received from the server.
 def on_message(client, userdata, msg):
@@ -29,9 +28,10 @@ def on_message(client, userdata, msg):
 client = mqtt.Client(client_id="6423")
 client.username_pw_set("solentairwatch", password="aLmgqJPH")
 
-# set call back functions
+# set MQTT call back functions
 client.on_connect = on_connect
 client.on_message = on_message
+client.connect(broker) # (address, port, timeout (sec) )
 
 # set up database connection
 db = sqlite3.connect(DB_Name)
@@ -41,14 +41,9 @@ cursor.execute('''
                        latitude TEXT, longitude TEXT, PM10 TEXT, PM25 TEXT, PM1 TEXT)
 ''')
 
-# (address, port, timeout (sec) )
-client.connect(broker)
-
 # Blocking call that processes network traffic, dispatches callbacks and
 # handles reconnecting.
 # Other loop*() functions are available that give a threaded interface and a
 # manual interface.
 client.loop_forever()
-
-
 db.close() # this will never be executed because of the forever loop - need some exit logic
