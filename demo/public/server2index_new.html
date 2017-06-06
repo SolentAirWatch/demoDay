@@ -150,7 +150,8 @@ window.addEventListener("load", function() {
 
 var number_of_sensors = 2;
 
-//this code makes a seperate chart for each id.
+//this function makes a seperate chart for each id.
+
 function make_chart(id) {
   var chart = new Chart(id, {
     type: 'line',
@@ -166,7 +167,7 @@ function make_chart(id) {
 	    maxRotation: 0,
 	    minRotation: 0
 	  },
-	  // position: 'bottom'
+	  // position: 'bottom',
 	  time: {
 	    displayFormats: {
 	      'millisecond': 'HH:MM:SS',
@@ -250,8 +251,6 @@ function add_to_chart(id) {
 var pmChartBySid = {};
 
 
-
-
 var gradient, ctx = undefined;
 window.addEventListener("load", function() {
   // make pm charts by sid
@@ -264,10 +263,10 @@ window.addEventListener("load", function() {
     var el = document.createElement("div");
     el.className="chart";
 
-    // sensor ID text
+data_server    // sensor ID text
     var txt = document.createElement("div");
     txt.className = "sensor-number-txt";
-    txt.innerText = West Quay;
+    txt.innerText = "West Quay";
     el.appendChild(txt);
 
     // canvas
@@ -277,14 +276,7 @@ window.addEventListener("load", function() {
     canvas.id = "sensor-canvas-"+i;
     chartsContainer.appendChild(el);
   }
-    //this code makes a chart for each sensor
-	/*
-
-var eventUrl = new EventSource("https://realtime.opensensors.io/v1/events/users/{user-id}/topics?token=XXXXXXXXXXXXX");
-eventUrl.onmessage = function(event) {
-  document.getElementById("result").innerHTML += event.data;
-}
-*/ 
+  //add a single chart
     for (var i=1;i<=1;i++) {
       pmChartBySid[i] = {
 	"chart": make_chart("sensor-canvas-"+i),
@@ -295,6 +287,18 @@ eventUrl.onmessage = function(event) {
       }
     }
 });
+//set up the event listener
+
+var firstevent = 1;
+var eventUrl = new EventSource("https://realtime.opensensors.io/v1/events/users/solentairwatch/topics?token=eyJhbGciOiJBMjU2S1ciLCJ0eXAiOiJKV0UiLCJlbmMiOiJBMTI4R0NNIn0.YYh_XuolLV50b0SobLzn6vXEuUkXOWDo.U1b-xdIgKxycTCEp.xAn6QRoSmFm94fZ8sMMB2FByzsKNVjlGT_AKPwiBSK2c73UWSpYMo730gp22v8hvccABl4R2nug0o9Dfz7lOKXZ_j3GINy4CRumrrycGc1jnqynOCaKWf4FzqTjcdLiGTcB-i06jvfV_J06T-oMQIVUHgiOfwh-ThTgHQ-_uyJDDomKlbz196gGcjRl_LaAQkL5_ZWWblrhHgc6YNFY.BoU3HQAOjOYwwWc_9cfv-w");
+eventUrl.onmessage = function(event) {
+  if ( firstevent ) {
+    //this code runs if this is the first event
+    firstevent = 0;
+  } else {
+    //update data
+  }
+}
 
 /*
 // pick colours from gradient
