@@ -290,70 +290,19 @@ data_server    // sensor ID text
 //set up the event listener
 
 var firstevent = 1;
-var eventUrl = new EventSource("https://realtime.opensensors.io/v1/events/users/solentairwatch/topics?token=eyJhbGciOiJBMjU2S1ciLCJ0eXAiOiJKV0UiLCJlbmMiOiJBMTI4R0NNIn0.YYh_XuolLV50b0SobLzn6vXEuUkXOWDo.U1b-xdIgKxycTCEp.xAn6QRoSmFm94fZ8sMMB2FByzsKNVjlGT_AKPwiBSK2c73UWSpYMo730gp22v8hvccABl4R2nug0o9Dfz7lOKXZ_j3GINy4CRumrrycGc1jnqynOCaKWf4FzqTjcdLiGTcB-i06jvfV_J06T-oMQIVUHgiOfwh-ThTgHQ-_uyJDDomKlbz196gGcjRl_LaAQkL5_ZWWblrhHgc6YNFY.BoU3HQAOjOYwwWc_9cfv-w");
+var eventUrl = new EventSource("https://realtime.opensensors.io/v1/events/users/solentairwatch/topics?token=eyJhbGciOiJBMjU2S1ciLCJ0eXAiOiJKV0UiLCJlbmMiOiJBMTI4R0NNIn0.ZcFSUNBeecJsEKWdKqKYmdMzc8J4X3_k.1Wa98DQw0w9IDL-W.NDwYfREP9QOw7d9y6cexIqc8A6lJVYq6qXMm4g2xpdY0fB7eHc8hhb-4A7BR7qjwTHd75ccYPL4tck_NmZ4GCYdfxXGxI3V4HOmG0P8JIf7ifyqsyURpBGZ66tXyi6_lDQ8LAYuV6EwGQkrL9r8wy8BDPGX_OUr-2QivBwo8bEApz9A5MasjMChWwNaH_DpTOMSIUh9vMMww1wgkHfk.azwX6g3SQXWtK-amSgAtrw");
 eventUrl.onmessage = function(event) {
-  if ( firstevent ) {
+  console.log(event.data);
+  if ( firstevent == 1 ) {
     //this code runs if this is the first event
     firstevent = 0;
+
+    processinitialdatachart("pm", 1, event.data);
   } else {
     //update data
+  processStreamDataChart("pm", event.data);
   }
 }
-
-/*
-// pick colours from gradient
-// value is 0 for green and 1 for red, 0.5 for carrot, and anythig in between.
-function getColour(value) {
-  var x = Math.round(value*ctx.canvas.width);
-  x = Math.min(x, 99); // at most last col of gradient
-  x = Math.max(x, 0);// at laest the first col of gradient
-  var data = ctx.getImageData(x,0,1,1).data;
-  return "rgba("+data.join(",")+")";
-}
-  */
-    </script>
-
-    <script src="/socket.io/socket.io.js"></script>
-    <script>
-var socket = io();
-socket.on("connect", function() {
-  console.log("connected")
-  document.getElementById('status').innerHTML = "connected"
-});
-
-socket.on("disconnect", function() {
-  console.log("disconnected")
-  document.getElementById('status').innerHTML = "disconnected"
-});
-
-// message is an object, e.g. {timestamp: "2017-03-12", etc...}
-function processStreamDataDraw(sensor_name, message) {
-  var sensor = document.getElementById("sensor-"+message._sid);
-  var col = getColour(message["PM25_STD"]/drawScalingFactor);
-  sensor.style.borderColor = col;
-}
-
-socket.on("initial_data_pm", function(sid, message) {
-  if (message.length > 0) {
-    // take latest for drawing
-
-    //no circles any more
-    //processStreamDataDraw("pm", message[message.length-1]); 
-
-    processInitialDataChart("pm", sid, message);
-  }
-});
-
-socket.on("update_pm", function(message) {
-  // draw data
-  //no circles any more
-  //processStreamDataDraw("pm", message);
-
-  // add data to charts
-  processStreamDataChart("pm", message);
-});
-
-// to adapt
 
 // message is an array of objects, e.g. [{timestamp: "2017-03-12", etc...}, ...]
 function processInitialDataChart(sensor_name, sid, message) {
