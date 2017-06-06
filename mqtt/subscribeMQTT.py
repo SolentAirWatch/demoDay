@@ -3,11 +3,10 @@ import json
 import sqlite3
 from pprint import pprint # makes data more pretty
 
-broker = "46.101.13.195"
-# broker = "mqtt.opensensors.io"
+# broker = "46.101.13.195" # this is our cloud server used to isolate any issues with opensenors which is more complex
+broker = "mqtt.opensensors.io"
 DB_Name =  "airwatchData.db"
 global cursor
-
 ## this section is based on code from https://eclipse.org/paho/clients/python
 
 # The callback for when the client receives a CONNACK response from the server.
@@ -23,20 +22,24 @@ def on_message(client, userdata, msg):
     data = json.loads(msg.payload.decode('utf-8'))
     pprint(data)
     # parse the data to the sql database, prob a way to do directly from JSON, this works though
-    cursor.execute('''INSERT INTO users(sid, timestmp, latitude, longitude, PM10, PM25, PM1)
-                  VALUES(?,?,?,?)''', (data["id"], data["time"], data["latitude"], data["longitude"], data["PM10"], data["PM2.5"], data["PM1"], ))
+    cursor.execute('''INSERT INTO sniffy(id, timestmp, latitude, longitude, PM10, PM25, PM1)
+                  VALUES(?,?,?,?,?,?,?)''', (data["id"], data["time"], data["latitude"], data["longitude"], data["PM10"], data["PM2.5"], data["PM1"]))
     db.commit()
     
 client = mqtt.Client(client_id="6423")
-db = sqlite3.connect(DB_Name)
-
-cursor = db.cursor()
-
-#client.username_pw_set("solentairwatch", password="aLmgqJPH")
+client.username_pw_set("solentairwatch", password="aLmgqJPH")
 
 # set call back functions
 client.on_connect = on_connect
 client.on_message = on_message
+
+# set up database connection
+db = sqlite3.connect(DB_Name)
+cursor = db.cursor()
+cursor.execute('''
+    CREATE TABLE IF NOT EXISTS  sniffy(id TEXT, timestmp TEXT,
+                       latitude TEXT, longitude TEXT, PM10 TEXT, PM25 TEXT, PM1 TEXT)
+''')
 
 # (address, port, timeout (sec) )
 client.connect(broker)
