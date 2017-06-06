@@ -23,7 +23,7 @@ def on_message(client, userdata, msg):
     pprint(data)
     # parse the data to the sql database, prob a way to do directly from JSON, this works though
     cursor.execute('''INSERT INTO sniffy(id, timestmp, latitude, longitude, PM10, PM25, PM1)
-                  VALUES(?,?,?,?,?,?,?)''', (data["id"], data["time"], data["latitude"], data["longitude"], data["PM10"], data["PM2.5"], data["PM1"]))
+                  VALUES(?,?,?,?,?,?,?)''', (data["id"], data["time"], data["latitude"], data["longitude"], data["PM10"], data["PM25"], data["PM1"]))
     db.commit()
     
 client = mqtt.Client(client_id="6423")
