@@ -7,12 +7,14 @@ import datetime
 ## dont run for too long as the time index is unbound - memory leaks ahoy!!!
 
 #client.username_pw_set("solentairwatch", password="YfLNeHZF")
-
-broker  = "46.101.13.195"
+broker = "mqtt.opensensors.io"
+topic = "/orgs/solentairwatch/sniffy"
+# broker  = "46.101.13.195" # test broker
 monitorID = 1
 monitorLocation = [50.9262, -1.4092]
 
 def on_connect(client, userdata, rc):
+    
 	if rc != 0:
 		pass
 		print("Unable to connect to MQTT Broker...")
@@ -28,7 +30,8 @@ def on_disconnect(client, userdata, rc):
     if rc !=0:
         pass
         
-client = mqtt.Client(client_id="6421")
+client = mqtt.Client(client_id="6435")
+client.username_pw_set("solentairwatch", password="IFwwJ6vO")
 client.max_inflight_messages_set(20)
 client.on_connect = on_connect
 client.on_publish = on_publish
@@ -55,7 +58,7 @@ while True:
 #       }
     t = t+ts # time update
     time.sleep(ts)
-    client.publish("/orgs/solentairwatch/sniffy", payload=json.dumps(message), qos=0, retain=False)
+    client.publish(topic, payload=json.dumps(message), qos=0, retain=False)
     print(json.dumps(message))
      
     
