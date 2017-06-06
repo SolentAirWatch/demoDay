@@ -42,13 +42,22 @@ var maxDataPointsInCharts = 100;
 
 var number_of_sensors = 2;
 
+var temp_data = d3.range(100);
+
+for (var i=0;i<100;i++)
+{
+	temp_data[i] = 20+4*Math.sin(i/50)+Math.random()*2;
+}
+
 //this function makes a chart with name "id".
 
 function make_chart(id) {
   var chart = new Chart(id, {
     type: 'line',
     data: {
-      datasets: []
+	labels: d3.range(100),
+      datasets: [
+	      {data:temp_data}]
     },
     options: {
       scales: {
@@ -78,7 +87,7 @@ function make_chart(id) {
 	  display: true,
 	  ticks: {
 	    beginAtZero: true,// minimum value will be 0. 
-	    suggestedMax: 2000
+	    suggestedMax: 120
 	  }
 	}]
       },
