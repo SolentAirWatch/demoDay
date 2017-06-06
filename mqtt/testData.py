@@ -50,7 +50,7 @@ while True:
 #          'pollutants': [
             'PM10': 0,
             'PM1': 0,
-            'PM2.5': x,
+            'PM25': x,
             'time': str(datetime.datetime.now()),
             'averaging': 0
         }

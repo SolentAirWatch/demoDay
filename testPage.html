@@ -92,7 +92,7 @@ function make_chart(id) {
   return chart;
 }
 
-
+var ctx = undefined;
 var pmChartBySid = {};
 
 
@@ -123,7 +123,7 @@ window.addEventListener("load", function() {
   //add a single chart
     for (var i=1;i<=1;i++) {
       pmChartBySid[i] = {
-	"chart": make_chart("sensor_chart"),
+	"chart": make_chart("chart_canvas"),
 	"domid": "chart_canvas",
 	"dataset": null,
 	"timeout": null,
@@ -141,7 +141,7 @@ eventUrl.onmessage = function(event) {
   if ( firstevent == 1 ) {
     //this code runs if this is the first event
     firstevent = 0;
-    processinitialdatachart("pm", 1, event.data);
+    processInitialDataChart("pm", 1, event.data);
   } else {
     //update data
   processStreamDataChart("pm", event.data);
