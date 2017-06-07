@@ -60,8 +60,3 @@ typings/
 
 # dotenv environment variables file
 .env
-
-# Vim temporary files
-*~
-*.swp
-*.swo
