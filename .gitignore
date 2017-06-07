@@ -2,6 +2,9 @@
 2_sensor*
 *.db
 
+# Mac desktop service files
+.DS_Store
+
 # Logs
 logs
 *.log
