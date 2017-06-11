@@ -3,6 +3,10 @@
 We love pull requests from everyone. By participating in this project, you
 agree to (help write) and abide by our soon to be code of conduct.
 
+Another project have [THIS][colab] excellent guide to collaborating on github.
+
+[colab]: https://code.tutsplus.com/tutorials/how-to-collaborate-on-github--net-34267
+
 To contribute first fork, then clone the repo:
 
     git clone git@github.com:your-username/DataServer.git
