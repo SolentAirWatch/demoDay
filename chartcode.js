@@ -2,9 +2,16 @@ var drawScalingFactor = 40;
 
 var maxDataPointsInCharts = 100;
 
-var number_of_sensors = 2;
+var pmChartBySid = {};
+
+
+//this is a list of sensors which are sending data.
+//it is populated on the fly, as we receive data from the sensor.
+//it is found under message.id
+var sensors_active = {}
 
 //this function makes a chart with name "id".
+
 
 function make_chart(id) {
 	var chart = new Chart(id, {
@@ -54,9 +61,7 @@ function make_chart(id) {
 	return chart;
 }
 
-var ctx = undefined;
-var pmChartBySid = {};
-
+//var ctx = undefined;
 
 window.addEventListener("load", function() {
 	// make pm charts by sid
@@ -82,7 +87,7 @@ window.addEventListener("load", function() {
 		canvas.id = "chart_canvas";
 		chartsContainer.appendChild(el);
 	}
-	//add a single chart
+	//add a single chart for now
 	for (var i=1;i<=1;i++) {
 		pmChartBySid[i] = {
 			"chart": make_chart("chart_canvas"),
@@ -93,10 +98,6 @@ window.addEventListener("load", function() {
 		}
 	}
 });
-//this is a list of sensors which are sending data.
-//it is populated on the fly, as we receive data from the sensor.
-//it is found under message.id
-var sensors_active = {}
 
 //set up the event listener
 //so that we know when we first receive data
@@ -131,24 +132,26 @@ $.postJSON("https://api.opensensors.io/v1/login",
 			//how many of the inital messages do we ignore
 			var ignore = 2;
 			var message = JSON.parse(JSON.parse(event.data).message);
+			var sid = message.id;
+			console.log(sid);
 			if ( eventnum < ignore + 1 ) {
 				//opensensors sends strange initial data, dump it
 			} else if ( eventnum == ignore + 1){
-				console.log(event.data);
-				processInitialDataChart("pm", 1, message);
+				//log the first one we're plotting
+				console.log(message);
+				processInitialDataChart("pm", 1, message, sid);
 			} else {
 				//update data
-				processStreamDataChart("pm", message);
+				processStreamDataChart("pm", message, sid);
 			}
 		}
 
 	}
 );
 
-// message is an array of objects, e.g. [{timestamp: "2017-03-12", etc...}, ...]
-function processInitialDataChart(sensor_name, chartid, message) {
+function processInitialDataChart(sensor_name, chartid, message, sid) {
 	var dataXy = [{x: message.time, y: message.PM25}];
-	console.log(dataXy)
+//	console.log(dataXy)
 	var dataset = getOrCreateDataset(sensor_name, chartid, "PM25");
 	dataset.data = dataXy;
 
@@ -156,14 +159,14 @@ function processInitialDataChart(sensor_name, chartid, message) {
 	pmChartBySid[chartid].chart.update(00, false);
 }
 
-function processStreamDataChart(sensor_name, message) {
+function processStreamDataChart(sensor_name, message, sid) {
 	getOrCreateDataset(sensor_name, 1, "PM25");
 	var datapoint = {x: message.time, y: message.PM25};
-	addDataPoint(sensor_name, 1, "PM25", datapoint);
+	addDataPoint(sid, 1, "PM25", datapoint);
 }
 
-function addDataPoint(sensorName, sid, readingName, point) {
-	var cfg = pmChartBySid[sid];
+function addDataPoint(sid, chartid, readingName, point) {
+	var cfg = pmChartBySid[chartid];
 	cfg.buffer.push(point);
 	requestRender(cfg);
 }
@@ -204,8 +207,8 @@ function requestRender(cfg) {
 
 // chart is a chart object, sensor_name is "bmp", "pm" or "a4",
 // stream_name is for example "PM25_STD"
-function getOrCreateDataset(sensor_name, sid, stream_name) {
-	var cfg = pmChartBySid[sid];
+function getOrCreateDataset(sensor_name, chartid, stream_name) {
+	var cfg = pmChartBySid[chartid]
 	var chart = cfg.chart;
 	if (cfg.dataset !== undefined && cfg.dataset !== null) {
 		return cfg.dataset;
