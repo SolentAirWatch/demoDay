@@ -134,12 +134,35 @@ window.addEventListener("load", function() {
 });
 //set up the event listener
 //so that we know when we first receive data
+var token ="";
 var firstevent = 1;
-//TODO: add token code
-$.get("https://realtime.opensensors.io/v1/login", function(d){
-	token = d.token;
-});
-var eventUrl = new EventSource("https://realtime.opensensors.io/v1/events/users/solentairwatch/topics?token=eyJhbGciOiJBMjU2S1ciLCJ0eXAiOiJKV0UiLCJlbmMiOiJBMTI4R0NNIn0.ZcFSUNBeecJsEKWdKqKYmdMzc8J4X3_k.1Wa98DQw0w9IDL-W.NDwYfREP9QOw7d9y6cexIqc8A6lJVYq6qXMm4g2xpdY0fB7eHc8hhb-4A7BR7qjwTHd75ccYPL4tck_NmZ4GCYdfxXGxI3V4HOmG0P8JIf7ifyqsyURpBGZ66tXyi6_lDQ8LAYuV6EwGQkrL9r8wy8BDPGX_OUr-2QivBwo8bEApz9A5MasjMChWwNaH_DpTOMSIUh9vMMww1wgkHfk.azwX6g3SQXWtK-amSgAtrw");
+$.postJSON = function(url, data, callback) {
+    return jQuery.ajax({
+    headers: { 
+        'Accept': 'application/json',
+        'Content-Type': 'application/json' 
+    },
+    'type': 'POST',
+    'url': url,
+    'data': JSON.stringify(data),
+    'dataType': 'json',
+    'success': callback
+    });
+};
+
+$.postJSON("https://api.opensensors.io/v1/login",
+	{
+		"username" : "solentairwatch",
+		"password" : prompt("Enter opensensors password:", "")
+	},
+	function(data, status) {
+		token = data.token;	
+		var opensensor_status = status;
+		console.log(opensensor_status);
+	}
+);
+
+var eventUrl = new EventSource("https://realtime.opensensors.io/v1/events/users/solentairwatch/topics?token=" + token);
 eventUrl.onmessage = function(event) {
   console.log(event.data);
   if ( firstevent == 1 ) {
