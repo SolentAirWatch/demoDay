@@ -1,19 +1,14 @@
-var drawScalingFactor = 40;
-
 var maxDataPointsInCharts = 100;
-
+// this is a list of charts.
 var pmChartBySid = {};
-
 
 //this is a list of sensors which are sending data.
 //it is populated on the fly, as we receive data from the sensor.
 //it is found under message.id
 var sensors_active = {}
 
-//this function makes a chart with name "id".
-
-
 function make_chart(id) {
+//this function makes a blank chart with name "id".
 	var chart = new Chart(id, {
 		type: 'line',
 		data: {
@@ -60,9 +55,8 @@ function make_chart(id) {
 	chart.buffers = [];
 	return chart;
 }
-
-//var ctx = undefined;
-
+//ctx potentially interferes with the chart working, it's a variable used by Chart.js
+var ctx = undefined;
 window.addEventListener("load", function() {
 	// make pm charts by sid
 	var chartsContainer = document.getElementById("chart_container");
@@ -130,10 +124,10 @@ $.postJSON("https://api.opensensors.io/v1/login",
 		eventUrl.onmessage = function(event) {
 			eventnum += 1;
 			//how many of the inital messages do we ignore
-			var ignore = 2;
+			var ignore = 3;
 			var message = JSON.parse(JSON.parse(event.data).message);
 			var sid = message.id;
-			console.log(sid);
+			//console.log(sid);
 			if ( eventnum < ignore + 1 ) {
 				//opensensors sends strange initial data, dump it
 			} else if ( eventnum == ignore + 1){
@@ -152,7 +146,7 @@ $.postJSON("https://api.opensensors.io/v1/login",
 function processInitialDataChart(sensor_name, chartid, message, sid) {
 	var dataXy = [{x: message.time, y: message.PM25}];
 //	console.log(dataXy)
-	var dataset = getOrCreateDataset(sensor_name, chartid, "PM25");
+	var dataset = getOrCreateDataset(sensor_name, sid, chartid, "PM25");
 	dataset.data = dataXy;
 
 	// update all charts
@@ -160,7 +154,7 @@ function processInitialDataChart(sensor_name, chartid, message, sid) {
 }
 
 function processStreamDataChart(sensor_name, message, sid) {
-	getOrCreateDataset(sensor_name, 1, "PM25");
+	getOrCreateDataset(sensor_name, sid, 1, "PM25");
 	var datapoint = {x: message.time, y: message.PM25};
 	addDataPoint(sid, 1, "PM25", datapoint);
 }
@@ -168,10 +162,31 @@ function processStreamDataChart(sensor_name, message, sid) {
 function addDataPoint(sid, chartid, readingName, point) {
 	var cfg = pmChartBySid[chartid];
 	cfg.buffer.push(point);
-	requestRender(cfg);
+	new_requestRender(sid, cfg);
 }
 
-function requestRender(cfg) {
+function new_requestRender(sid, cfg) {
+	// update all charts
+
+	var chart = cfg.chart;
+
+	var buffer = cfg.buffer;
+	var dataset = chart.data.datasets[datasets_existing_for.indexOf(sid)];
+
+	var data = dataset.data;
+	data.push(buffer[0]);
+
+	buffer.length = 0;
+	if (data.length > maxDataPointsInCharts) {
+		data = data.slice(data.length - maxDataPointsInCharts);
+	}
+
+	dataset.data = data;
+
+	chart.update(0, false);
+}
+
+function requestRender(sid, cfg) {
 	// update all charts
 	if (cfg.timeout !== null) {
 		// do nothing, there's a timeout already
@@ -185,7 +200,7 @@ function requestRender(cfg) {
 		var chart = cfg.chart;
 
 		var buffer = cfg.buffer;
-		var dataset = cfg.dataset;
+		var dataset = chart.data.datasets[datasets_existing_for.indexOf(sid)];
 
 		var data = dataset.data.slice();
 		for (var j in buffer) {
@@ -205,19 +220,23 @@ function requestRender(cfg) {
 	}, 500);
 }
 
-// chart is a chart object, sensor_name is "bmp", "pm" or "a4",
-// stream_name is for example "PM25_STD"
-function getOrCreateDataset(sensor_name, chartid, stream_name) {
+//an array to keep track of which sensors have been given a dataset yet.
+//appended to in the order in which we create datasets!
+var datasets_existing_for = []; 
+// chart is a chart object
+// sensor_id is the id of the sensor we want to plot
+function getOrCreateDataset(sensor_name, sensor_id, chartid, stream_name) {
 	var cfg = pmChartBySid[chartid]
 	var chart = cfg.chart;
-	if (cfg.dataset !== undefined && cfg.dataset !== null) {
-		return cfg.dataset;
+	if (datasets_existing_for.includes(sensor_id)) {
+		return chart.data.datasets[datasets_existing_for.indexOf(sensor_id)];
 	}
 
-	// if not found (didn't return in the check above)
+	console.log("first data from " + sensor_id)
+	// not found, create it (didn't return in the check above)
 	var dts = {
 		data: [],
-		label: cfg.displayName || stream_name,
+		label: sensor_id,
 		borderColor: cfg.color || "#000000",
 		backgroundColor: "transparent",
 		bezierCurve : false,
@@ -227,7 +246,9 @@ function getOrCreateDataset(sensor_name, chartid, stream_name) {
 		cubicInterpolationMode: "monotone"
 	};
 
-	cfg.dataset = dts;
+	datasets_existing_for.push(sensor_id);
+	//	this was only useful for one plot per chart
+//	cfg.dataset = dts;
 	cfg.buffer = [];
 	chart.data.datasets.push(dts);
 	return dts;
