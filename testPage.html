@@ -135,7 +135,7 @@ window.addEventListener("load", function() {
 //set up the event listener
 //so that we know when we first receive data
 var token ="";
-var firstevent = 1;
+var eventnum = 1;
 $.postJSON = function(url, data, callback) {
     return jQuery.ajax({
     headers: { 
@@ -149,7 +149,7 @@ $.postJSON = function(url, data, callback) {
     'success': callback
     });
 };
-
+		
 $.postJSON("https://api.opensensors.io/v1/login",
 	{
 		"username" : "solentairwatch",
@@ -159,54 +159,42 @@ $.postJSON("https://api.opensensors.io/v1/login",
 		token = data.token;	
 		var opensensor_status = status;
 		console.log(opensensor_status);
+		var eventUrl = new EventSource("https://realtime.opensensors.io/v1/events/users/solentairwatch/topics?token=" + token);
+		eventUrl.onmessage = function(event) {
+				eventnum += 1;
+			if ( eventnum < 3 ) {
+				//opensensors sends strange initial data, dump it
+			} else if ( eventnum == 3){
+			//console.log(event.data);
+				processInitialDataChart("pm", 1, JSON.parse(JSON.parse(event.data).message));
+			} else {
+				//update data
+				processStreamDataChart("pm", JSON.parse(JSON.parse(event.data).message));
+			}
+		}
+
 	}
 );
 
-var eventUrl = new EventSource("https://realtime.opensensors.io/v1/events/users/solentairwatch/topics?token=" + token);
-eventUrl.onmessage = function(event) {
-  console.log(event.data);
-  if ( firstevent == 1 ) {
-    //this code runs if this is the first event
-    firstevent = 0;
-    processInitialDataChart("pm", 1, event.data);
-  } else {
-    //update data
-  processStreamDataChart("pm", event.data);
-  }
-}
-
 // message is an array of objects, e.g. [{timestamp: "2017-03-12", etc...}, ...]
 function processInitialDataChart(sensor_name, sid, message) {
-  var sensor = plottableSensorData[sensor_name];
-  var sids_to_update = [];
-  for (var readingName in sensor) {
-    var dataXy = message.map(function(d) {
-	//simplified code here since we are only plotting pm25
-      return {x: d.time, y: d.PM25};
-    });
-    sids_to_update.push(sid);
-    var dataset = getOrCreateDataset(sensor_name, sid, readingName);
+    var dataXy = [{x: message.time, y: message.PM25}];
+	  console.log(dataXy)
+    var dataset = getOrCreateDataset(sensor_name, sid, "PM25");
     dataset.data = dataXy;
-  }
 
   // update all charts
-  done = {};
-  sids_to_update.every(function(sid) {
-    if (done[sid]) { return true; }
-    done[sid] = true;
-    pmChartBySid[sid].chart.update(200, false);
-    return true;
-  });
+    pmChartBySid[sid].chart.update(00, false);
 }
 
 function processStreamDataChart(sensor_name, message) {
   //update the charts
-  var sensor = plottableSensorData[sensor_name];
-  for (var readingName in sensor) {
-    getOrCreateDataset(sensor_name, message._sid, readingName);
+  //var sensor = plottableSensorData[sensor_name];
+  //for (var readingName in sensor) {
+    getOrCreateDataset(sensor_name, 1, "PM25");
     var datapoint = {x: message.time, y: message.PM25};
-    addDataPoint(sensor_name, 1, readingName, datapoint);
-  }
+    addDataPoint(sensor_name, 1, "PM25", datapoint);
+  //}
 }
 
 function addDataPoint(sensorName, sid, readingName, point) {
@@ -224,7 +212,7 @@ function requestRender(cfg) {
 
   // there is no timeout, so set one
   cfg.timeout = setTimeout(function(){
-    console.log("rendering", cfg.name, cfg);
+    //console.log("rendering", cfg.name, cfg);
 
     var chart = cfg.chart;
 
@@ -254,18 +242,18 @@ function requestRender(cfg) {
 function getOrCreateDataset(sensor_name, sid, stream_name) {
   var cfg = pmChartBySid[sid];
   var chart = cfg.chart;
-
   if (cfg.dataset !== undefined && cfg.dataset !== null) {
     return cfg.dataset;
   }
 
-  // if not found (didn't return in the for loop)
+  // if not found (didn't return in the check above)
   var dts = {
     data: [],
     label: cfg.displayName || stream_name,
     borderColor: cfg.color || "#000000",
     backgroundColor: "transparent",
     bezierCurve : false,
+	 markerType : "None",
     fill: false,
     lineTension: 0,
     cubicInterpolationMode: "monotone"
