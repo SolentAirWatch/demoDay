@@ -60,3 +60,7 @@ typings/
 
 # dotenv environment variables file
 .env
+
+# ignore vim temp files.
+# thse are still created for some reason.
+*~
