@@ -71,7 +71,7 @@ window.addEventListener("load", function() {
 		// sensor ID text
 		var txt = document.createElement("div");
 		txt.className = "chart_text";
-		txt.innerText = "West Quay";
+		txt.innerText = "Live sensor data";
 		el.appendChild(txt);
 
 		// canvas
@@ -127,7 +127,8 @@ $.postJSON("https://api.opensensors.io/v1/login",
 			var ignore = 3;
 			var message = JSON.parse(JSON.parse(event.data).message);
 			var sid = message.id;
-			//console.log(sid);
+			console.log("message from id " + sid);
+
 			if ( eventnum < ignore + 1 ) {
 				//opensensors sends strange initial data, dump it
 			} else if ( eventnum == ignore + 1){
