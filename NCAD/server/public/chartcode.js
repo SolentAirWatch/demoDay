@@ -132,8 +132,8 @@ $.APIgetJSON = function(url, APIkey, callback) {
 
 //get plot_mode
 var plot_mode = "";
-while (!["H","L","h","l"].includes(plot_mode)) {
-	plot_mode = prompt("Plot (H)istorical or (L)ive data?", "L");
+while (!["H","L","h","l","d"].includes(plot_mode)) {
+	plot_mode = prompt("Plot (H)istorical or (L)ive data? Or 'd' for display.", "d");
 }
 
 var APIkey = "c26fa96c-16b8-4fe9-967d-bf0e14047f38";
@@ -147,7 +147,7 @@ var all_data = [];
 if(plot_mode == "H" || plot_mode == "h") {
 	//plotting historical data
 	var startDate = "2017-06-13T00:00:00Z";
-	var endDate = "2017-06-13T01:40:00Z";
+	var endDate = "2017-06-13T03:40:00Z";
 	//third value:
 	//true: include spoof data
 	//false: don't include spoof data
@@ -162,7 +162,7 @@ if(plot_mode == "H" || plot_mode == "h") {
 		console.log("got " + messageLength + " messages in total");
 	});
 	*/
-} else {
+} else if(plot_mode == "L" || plot_mode == "l") {
 	/*
 	var realtimeAPIUrl = "https://realtime.opensensors.io/v1/events/topics//orgs/solentairwatch/sniffy";
 	console.log("making API request");

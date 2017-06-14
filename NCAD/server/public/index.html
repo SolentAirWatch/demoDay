@@ -1,132 +1,108 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
-<html>
-	<head>
-		<meta content="text/html; charset=ISO-8859-1" http-equiv="content-type">
-		<title>Test Page</title>
-		<style>
+<html><head>
+<meta http-equiv="content-type" content="text/html; charset=ISO-8859-1"><title>Test Page</title>
+
+<style>
 #body {
-	background-color: #ebebeb;
+background-color: #ebebeb;
 }
 html * {
-	font-family: Helvetica !important;
+font-family: Helvetica ! important;
 }
 #solentheader {
-	font-size: 80px;
-	margin: 45px auto 35px; /*first number is top, last is bottom*/
+margin: 45px auto 35px;
+font-size: 80px;
 }
-
 .table_element {
-	border: 2px #330000 solid;
+border: 4px solid #330000;
+}
+iframe {
+margin: 0 auto;
 }
 .chart_canvas {
-	border: 0px #804600 solid;
+border: 0px solid #804600;
 }
 #main_header {
-	text-align: center;
-	margin: 45px auto 35px; /*first number is top, last is bottom*/
+margin: 45px auto 100px;
+text-align: center;
 }
 #chart_container {
-	width: 90%; /* or whatever is required */
-	text-align: center; /* ensures the image is always in the h-middle */
-	overflow: hidden; /* hide the cropped portion */
-	vertical-align: top;
-	width: 743px;
-	height: 0px;
+text-align: center;
+overflow: hidden;
+vertical-align: top;
+width: 1300px;
+height: 450px;
 }
 #main_table {
-	text-align: left;
-	align: center;
-	width: 1800px;
-	height: 600px;
-	border: 0;
-	cellpadding: 5;
-	cellspacing: 5;
-	margin:-10px auto;
+border: none;
+/*margin: -10px auto;*/
+text-align: center;
+width: 1920px;
+height: 600px;
+/*float: center;*/
 }
-#image_container {
-	margin: auto;
-	width: 800px;
-	height: 315px;
-	overflow: hidden;
-	/*border: 1px red solid;*/
+#soton_image_container {
+width: 560px;
+height: 315px;
+overflow: hidden;
+margin: 0 auto;
 }
-#image_container img {
-	margin-top: -30px;
-	margin-right: -50px;
-	margin-bottom: 0px;
-	margin-left: -100px;
-	position: relative;
-	filter: grayscale(50%);
-	/*margin: 0px 0 0 -10px;*/
+#soton_image_old {
+margin: -300px 0px 0px -650px;
+zoom: 90%;
+/*position: fixed;*/
+/*width: 100%;*/
+/*object-fit: cover;*/
+}
+#soton_image {
+/*position: fixed;*/
+/*width: 100%;*/
+/*object-fit: cover;*/
 }
 #solentlogo {
-	width: 200px;
-	height: auto;
+position: fixed;
+top: 10px;
+left: 10px;
+width: 200px;
+height: auto;
+float: left;
 }
-		</style>
-	</head>
-	<body id="body">
-		<div id="logo container">
-			<img id="solentlogo" src="whitelogo.png"></img>
-			<div id="main_header">
-				<!--<h1 id="solentheader"><b>Solent Air Watch</b></h1>-->
-				<h2>Live Air Quality Monitoring, Westquay</h2>
-			</div>
-		</div>
-		<table id="main_table">
-			<tbody>
-				<tr>
-					<td colspan="3" id="chart_container" >
-						<!-- where the chart goes-->
-					</td>
-					<tr>
-						<td>
-							<div class= "table_element" id="image_container">
-								<img style="width: 600px; height: 504px;" alt="" src="Soton_Map.png">
-							</div>
-						</td>
-						<td>
-							<iframe class= "table_element" src="https://www.youtube.com/embed/tQXmsZ_ph88?&amp;autoplay=1" allowfullscreen="" frameborder="0" height="315" width="560">
-							</iframe>
-						</td>
-						<td>
-							<iframe class= "table_element" src="https://www.youtube.com/embed/tQXmsZ_ph88?&amp;autoplay=1" allowfullscreen="" frameborder="0" height="315" width="560">
-							</iframe>
-						</td>
-					</tr>
-					<!--
-		  <td style="vertical-align: top; width: 743px;">
-		  <table style="text-align: left; width: 100%;" border="0" cellpadding="0" cellspacing="0">
-		  <tbody>
-		  <tr>
-		  <td style="vertical-align: top;">
-		  </td>
-		  </tr>
-		  <tr>
-		  <td style="vertical-align: top;">
-		  <br>
-		  </td>
-		  </tr>
-		  </tbody>
-		  </table>
-		  <br>
-		  </td>
-					-->
-				</tr>
-				<!--
-		 <tr>
-		 <td style="vertical-align: top; width: 743px;">
-		 <br>
-		 </td>
-		 <td style="vertical-align: top; width: 743px;">
-		 <br>
-		 </td>
-		 </tr>
-				-->
-			</tbody>
-		</table>
-		<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.5.0/Chart.bundle.min.js"></script>
-		<script src="http://d3js.org/d3.v3.min.js" charset="utf-8"></script>
-		<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
-		<script src="chartcode.js"></script>
-	</body></html>
+#titleText {
+color: #333333;
+font-size: 3.5em;
+text-transform: none;
+font-style: normal;
+font-weight: bolder;
+}
+#second_row{
+display: block;
+margin: 0 auto;
+width: 1920px;
+height: 600px;
+text-align: center;
+}
+.tablediv {
+display: inline-block;
+/*margin: 0 auto;*/
+}
+</style>
+</head>
+<body>
+<div id="logo container"><img id="solentlogo" src="whitelogo.png"><!--<h1 id="solentheader"><b>Solent Air Watch</b></h1>-->
+<div id="main_header">
+<h2 id="titleText">Live
+Air Quality Monitoring, Westquay</h2>
+</div>
+</div>
+<div id="chart_container"><!-- where the chart goes--></div>
+<div id="second_row">
+<div class="tablediv"><iframe class="table_element" src="https://www.youtube.com/embed/tQXmsZ_ph88?&amp;autoplay=1" allowfullscreen="" frameborder="0" height="315" width="560"></iframe></div>
+<div class="tablediv table_element" id="soton_image_container"><img src="crop_soton.png" id="soton_image"> </div>
+<div class="tablediv"><iframe class="table_element" src="https://www.youtube.com/embed/tQXmsZ_ph88?&amp;autoplay=1" allowfullscreen="" frameborder="0" height="315" width="560"></iframe></div>
+</div>
+<!-- <td style="vertical-align: top; width: 743px;"> <table style="text-align: left; width: 100%;" border="0" cellpadding="0" cellspacing="0"> <tbody> <tr> <td style="vertical-align: top;"> </td> </tr> <tr> <td style="vertical-align: top;"> <br> </td> </tr> </tbody> </table> <br> </td> --><!-- <tr> <td style="vertical-align: top; width: 743px;"> <br> </td> <td style="vertical-align: top; width: 743px;"> <br> </td> </tr> --><script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.5.0/Chart.bundle.min.js"></script><script src="http://d3js.org/d3.v3.min.js" charset="utf-8"></script><script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+
+
+
+<script src="chartcode.js"></script>
+</body></html>
