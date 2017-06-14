@@ -46,8 +46,10 @@ function make_chart(id) {
 					}
 				}]
 			},
+			//height: 10,
 			maintainAspectRatio: false,
 			animation: false,
+			responsive: false,
 			legend: { display: false },
 			elements: { point: { radius: 0 } }
 		}
@@ -80,7 +82,10 @@ for (var i=1;i<=1;i++) {
 	el.appendChild(canvas);
 	canvas.className="chart_canvas";
 	canvas.id = "chart_canvas";
+	canvas.height = 300;
+	canvas.width = 900;
 	chartsContainer.appendChild(el);
+
 }
 //add a single chart for now
 for (var i=1;i<=1;i++) {
@@ -232,52 +237,52 @@ function onDataFinish() {
 }
 */
 
-function setupLiveTokenListener() {
-	$.postJSON("https://api.opensensors.io/v1/login",
-		{
-			"username" : "solentairwatch",
-			"password" : password
-		},
-		function(data, status) {
-			console.log("new token received");
-			token = data.token;	
+	function setupLiveTokenListener() {
+		$.postJSON("https://api.opensensors.io/v1/login",
+			{
+				"username" : "solentairwatch",
+				"password" : password
+			},
+			function(data, status) {
+				console.log("new token received");
+				token = data.token;	
 
-			var apiRealtimeUrl = "https://realtime.opensensors.io/v1/events/users/solentairwatch/topics?token=" + token;
-			var eventUrl = new EventSource(apiRealtimeUrl);
-			//get a new token after a while
-			setTimeout(function(){
-				eventUrl.close();
-				console.log("getting new token");
-				setupLiveTokenListener();
-			}, 30*60*1000);
-			//the event listener
-			eventUrl.onmessage = function(event) {
-				eventnum += 1;
-				//how many of the inital messages do we ignore
-				var ignore = 2;
-				var message = JSON.parse(JSON.parse(event.data).message);
-				//	console.log(message);
-				var sid = message.id;
-				//console.log("message from id " + sid);
-				if ( eventnum < ignore + 1 ) {
-					//opensensors sends strange initial data, dump it
-				} else if ( eventnum == ignore + 1){
-					//log the first one we're plotting
-					//console.log(message);
-					all_data.push(message);
-					updateChartDatasetsThenPlot();
-			//		processInitialDataChart("pm", 1, message, sid);
-				} else {
-					//update data
-					all_data.push(message);
-					updateChartDatasetsThenPlot();
-			//		processStreamDataChart("pm", message, sid);
+				var apiRealtimeUrl = "https://realtime.opensensors.io/v1/events/users/solentairwatch/topics?token=" + token;
+				var eventUrl = new EventSource(apiRealtimeUrl);
+				//get a new token after a while
+				setTimeout(function(){
+					eventUrl.close();
+					console.log("getting new token");
+					setupLiveTokenListener();
+				}, 30*60*1000);
+				//the event listener
+				eventUrl.onmessage = function(event) {
+					eventnum += 1;
+					//how many of the inital messages do we ignore
+					var ignore = 2;
+					var message = JSON.parse(JSON.parse(event.data).message);
+					//	console.log(message);
+					var sid = message.id;
+					//console.log("message from id " + sid);
+					if ( eventnum < ignore + 1 ) {
+						//opensensors sends strange initial data, dump it
+					} else if ( eventnum == ignore + 1){
+						//log the first one we're plotting
+						//console.log(message);
+						all_data.push(message);
+						updateChartDatasetsThenPlot();
+						//		processInitialDataChart("pm", 1, message, sid);
+					} else {
+						//update data
+						all_data.push(message);
+						updateChartDatasetsThenPlot();
+						//		processStreamDataChart("pm", message, sid);
+					}
 				}
 			}
-		}
-	);
+		);
 
-}
+	}
 
 function processInitialDataChart(sensor_name, chartid, message, sid) {
 	var dataXy = [{x: message.time, y: message.PM25}];
@@ -409,7 +414,7 @@ function IDrequestRender(cfg) {
 
 function dataResample(data_array) {
 	//this takes an array and interpolates if it has more that maxDataPointsInCharts elements
-//	console.log("Resampling!");
+	//	console.log("Resampling!");
 	//the number of points
 	var N = data_array.length;
 	console.log("I was passed " + N + " points to resample");

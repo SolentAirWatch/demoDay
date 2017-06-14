@@ -1,108 +1,115 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
 <html><head>
-<meta http-equiv="content-type" content="text/html; charset=ISO-8859-1"><title>Test Page</title>
+		<meta http-equiv="content-type" content="text/html; charset=ISO-8859-1"><title>Test Page</title>
 
-<style>
+		<style>
 #body {
-background-color: #ebebeb;
+	background-color: #ebebeb;
 }
 html * {
-font-family: Helvetica ! important;
+	font-family: Helvetica ! important;
 }
 #solentheader {
-margin: 45px auto 35px;
-font-size: 80px;
+	margin: 45px auto 35px;
+	font-size: 80px;
 }
 .table_element {
-border: 4px solid #330000;
+	border: 4px solid #330000;
 }
 iframe {
-margin: 0 auto;
+	margin: 0 auto;
 }
-.chart_canvas {
-border: 0px solid #804600;
+#chart_canvas {
+	margin: auto;
+	border: 3px solid #804600;
 }
 #main_header {
-margin: 45px auto 100px;
-text-align: center;
+	margin: 45px auto 100px;
+	text-align: center;
 }
 #chart_container {
-text-align: center;
-overflow: hidden;
-vertical-align: top;
-width: 1300px;
-height: 450px;
+	margin: 0 auto;
+	border: 10px solid #bbc1cc;
+	overflow: hidden;
+	vertical-align: top;
+	width: 1000px;
+	height: 350px;
 }
 #main_table {
-border: none;
-/*margin: -10px auto;*/
-text-align: center;
-width: 1920px;
-height: 600px;
-/*float: center;*/
+	border: none;
+	/*margin: -10px auto;*/
+	text-align: center;
+	width: 1920px;
+	height: 600px;
+	/*float: center;*/
 }
 #soton_image_container {
-width: 560px;
-height: 315px;
-overflow: hidden;
-margin: 0 auto;
+	width: 560px;
+	height: 315px;
+	overflow: hidden;
+	margin: 0 auto;
 }
 #soton_image_old {
-margin: -300px 0px 0px -650px;
-zoom: 90%;
-/*position: fixed;*/
-/*width: 100%;*/
-/*object-fit: cover;*/
+	margin: -300px 0px 0px -650px;
+	zoom: 90%;
+	/*position: fixed;*/
+	/*width: 100%;*/
+	/*object-fit: cover;*/
 }
 #soton_image {
-/*position: fixed;*/
-/*width: 100%;*/
-/*object-fit: cover;*/
+	/*position: fixed;*/
+	/*width: 100%;*/
+	/*object-fit: cover;*/
+
 }
 #solentlogo {
-position: fixed;
-top: 10px;
-left: 10px;
-width: 200px;
-height: auto;
-float: left;
+	position: fixed;
+	top: 10px;
+	left: 10px;
+	width: 200px;
+	height: auto;
+	float: left;
 }
 #titleText {
-color: #333333;
-font-size: 3.5em;
-text-transform: none;
-font-style: normal;
-font-weight: bolder;
+	color: #333333;
+	font-size: 3.5em;
+	text-transform: none;
+	font-style: normal;
+	font-weight: bolder;
 }
 #second_row{
-display: block;
-margin: 0 auto;
-width: 1920px;
-height: 600px;
-text-align: center;
+	display: block;
+	margin: 0 auto;
+	width: 1920px;
+	height: 600px;
+	text-align: center;
 }
 .tablediv {
-display: inline-block;
-/*margin: 0 auto;*/
+	display: inline-block;
+	/*margin: 0 auto;*/
 }
-</style>
-</head>
-<body>
-<div id="logo container"><img id="solentlogo" src="whitelogo.png"><!--<h1 id="solentheader"><b>Solent Air Watch</b></h1>-->
-<div id="main_header">
-<h2 id="titleText">Live
-Air Quality Monitoring, Westquay</h2>
-</div>
-</div>
-<div id="chart_container"><!-- where the chart goes--></div>
-<div id="second_row">
-<div class="tablediv"><iframe class="table_element" src="https://www.youtube.com/embed/tQXmsZ_ph88?&amp;autoplay=1" allowfullscreen="" frameborder="0" height="315" width="560"></iframe></div>
-<div class="tablediv table_element" id="soton_image_container"><img src="crop_soton.png" id="soton_image"> </div>
-<div class="tablediv"><iframe class="table_element" src="https://www.youtube.com/embed/tQXmsZ_ph88?&amp;autoplay=1" allowfullscreen="" frameborder="0" height="315" width="560"></iframe></div>
-</div>
-<!-- <td style="vertical-align: top; width: 743px;"> <table style="text-align: left; width: 100%;" border="0" cellpadding="0" cellspacing="0"> <tbody> <tr> <td style="vertical-align: top;"> </td> </tr> <tr> <td style="vertical-align: top;"> <br> </td> </tr> </tbody> </table> <br> </td> --><!-- <tr> <td style="vertical-align: top; width: 743px;"> <br> </td> <td style="vertical-align: top; width: 743px;"> <br> </td> </tr> --><script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.5.0/Chart.bundle.min.js"></script><script src="http://d3js.org/d3.v3.min.js" charset="utf-8"></script><script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+#chart {
+	/*width: 600px;*/
+	/*height: 200px;*/
+}
+		</style>
+	</head>
+	<body>
+		<div id="logo container"><img id="solentlogo" src="whitelogo.png"><!--<h1 id="solentheader"><b>Solent Air Watch</b></h1>-->
+			<div id="main_header">
+				<h2 id="titleText">Live
+					Air Quality Monitoring, Westquay</h2>
+			</div>
+		</div>
+		<div id="chart_container"><!-- where the chart goes--></div>
+		<div id="second_row">
+			<div class="tablediv"><iframe class="table_element" src="https://www.youtube.com/embed/tQXmsZ_ph88?&amp;autoplay=1" allowfullscreen="" frameborder="0" height="315" width="560"></iframe></div>
+			<div class="tablediv table_element" id="soton_image_container"><img src="crop_soton.png" id="soton_image"> </div>
+			<div class="tablediv"><iframe class="table_element" src="https://www.youtube.com/embed/tQXmsZ_ph88?&amp;autoplay=1" allowfullscreen="" frameborder="0" height="315" width="560"></iframe></div>
+		</div>
+		<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.5.0/Chart.bundle.min.js"></script>
+		<script src="http://d3js.org/d3.v3.min.js" charset="utf-8"></script>
+		<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
 
-
-
-<script src="chartcode.js"></script>
-</body></html>
+		<script src="chartcode.js"></script>
+	</body></html>
