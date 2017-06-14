@@ -5,8 +5,16 @@
 		<title>Test Page</title>
 		<style>
 #body {
-	background-color: Ghostwhite;
+	background-color: #ebebeb;
 }
+html * {
+	font-family: Helvetica !important;
+}
+#solentheader {
+	font-size: 80px;
+	margin: 45px auto 35px; /*first number is top, last is bottom*/
+}
+
 .table_element {
 	border: 2px #330000 solid;
 }
@@ -15,27 +23,31 @@
 }
 #main_header {
 	text-align: center;
-	margin: 5px auto 15px; /*first number is top, last is bottom*/
+	margin: 45px auto 35px; /*first number is top, last is bottom*/
 }
 #chart_container {
 	width: 90%; /* or whatever is required */
 	text-align: center; /* ensures the image is always in the h-middle */
 	overflow: hidden; /* hide the cropped portion */
+	vertical-align: top;
+	width: 743px;
+	height: 0px;
 }
 #main_table {
 	text-align: left;
 	align: center;
-	width: 1200px;
-	height: 776px;
+	width: 1800px;
+	height: 600px;
 	border: 0;
 	cellpadding: 5;
 	cellspacing: 5;
 	margin:-10px auto;
 }
 #image_container {
-   width: 700px;
-   height: 315px;
-   overflow: hidden;
+	margin: auto;
+	width: 800px;
+	height: 315px;
+	overflow: hidden;
 	/*border: 1px red solid;*/
 }
 #image_container img {
@@ -47,54 +59,72 @@
 	filter: grayscale(50%);
 	/*margin: 0px 0 0 -10px;*/
 }
+#solentlogo {
+	width: 200px;
+	height: auto;
+}
 		</style>
 	</head>
 	<body id="body">
-						<h1 id="main_header">West Quay: Live Air Quality Monitoring by SolentAirWatch</h1>
+		<div id="logo container">
+			<img id="solentlogo" src="whitelogo.png"></img>
+			<div id="main_header">
+				<!--<h1 id="solentheader"><b>Solent Air Watch</b></h1>-->
+				<h2>Live Air Quality Monitoring, Westquay</h2>
+			</div>
+		</div>
 		<table id="main_table">
 			<tbody>
 				<tr>
-					<td id="chart_container" style="vertical-align: top; width: 743px;">
-						<div class= "table_element" id="image_container">
-							<img style="width: 901px; height: 704px;" alt="" src="Soton_Map.png">
-						</div>
-						<br>
+					<td colspan="3" id="chart_container" >
+						<!-- where the chart goes-->
 					</td>
-					<td style="vertical-align: top; width: 743px;">
-						<!--<br>-->
-						<table style="text-align: left; width: 100%;" border="0" cellpadding="0" cellspacing="0">
-							<tbody>
-								<tr>
-									<td style="vertical-align: top;">
-										<!--<br>-->
-										<iframe class= "table_element" src="https://www.youtube.com/embed/tQXmsZ_ph88?&amp;autoplay=1" allowfullscreen="" frameborder="0" height="315" width="560">
-										</iframe>
-									</td>
-								</tr>
-								<tr>
-									<td style="vertical-align: top;">
-										<br>
-										<iframe class= "table_element" src="https://www.youtube.com/embed/tQXmsZ_ph88?&amp;autoplay=1" allowfullscreen="" frameborder="0" height="315" width="560">
-										</iframe>
-									</td>
-								</tr>
-							</tbody>
-						</table>
-						<br>
-					</td>
+					<tr>
+						<td>
+							<div class= "table_element" id="image_container">
+								<img style="width: 600px; height: 504px;" alt="" src="Soton_Map.png">
+							</div>
+						</td>
+						<td>
+							<iframe class= "table_element" src="https://www.youtube.com/embed/tQXmsZ_ph88?&amp;autoplay=1" allowfullscreen="" frameborder="0" height="315" width="560">
+							</iframe>
+						</td>
+						<td>
+							<iframe class= "table_element" src="https://www.youtube.com/embed/tQXmsZ_ph88?&amp;autoplay=1" allowfullscreen="" frameborder="0" height="315" width="560">
+							</iframe>
+						</td>
+					</tr>
+					<!--
+		  <td style="vertical-align: top; width: 743px;">
+		  <table style="text-align: left; width: 100%;" border="0" cellpadding="0" cellspacing="0">
+		  <tbody>
+		  <tr>
+		  <td style="vertical-align: top;">
+		  </td>
+		  </tr>
+		  <tr>
+		  <td style="vertical-align: top;">
+		  <br>
+		  </td>
+		  </tr>
+		  </tbody>
+		  </table>
+		  <br>
+		  </td>
+					-->
 				</tr>
-				<tr>
-					<td style="vertical-align: top; width: 743px;">
-						<br>
-					</td>
-					<td style="vertical-align: top; width: 743px;">
-						4<br>
-					</td>
-				</tr>
+				<!--
+		 <tr>
+		 <td style="vertical-align: top; width: 743px;">
+		 <br>
+		 </td>
+		 <td style="vertical-align: top; width: 743px;">
+		 <br>
+		 </td>
+		 </tr>
+				-->
 			</tbody>
 		</table>
-		<br>
-		<br>
 		<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.5.0/Chart.bundle.min.js"></script>
 		<script src="http://d3js.org/d3.v3.min.js" charset="utf-8"></script>
 		<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
