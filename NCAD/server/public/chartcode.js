@@ -72,7 +72,7 @@ for (var i=1;i<=1;i++) {
 	// sensor ID text
 	var txt = document.createElement("div");
 	txt.className = "chart_text";
-//	txt.innerText = "Live sensor data";
+	//	txt.innerText = "Live sensor data";
 	el.appendChild(txt);
 
 	// canvas
@@ -146,9 +146,13 @@ var all_data = [];
 //and then process data
 if(plot_mode == "H" || plot_mode == "h") {
 	//plotting historical data
-	var startDate = "2017-05-13T02:00:00Z";
-	var endDate = "2017-06-13T02:10:00Z";
-	getHistoricalData(startDate, endDate, true, onDataFinish);
+	var startDate = "2017-06-13T00:00:00Z";
+	var endDate = "2017-06-13T01:40:00Z";
+	//third value:
+	//true: include spoof data
+	//false: don't include spoof data
+	getHistoricalData(startDate, endDate, true, updateChartDatasetsThenPlot);
+	//getHistoricalData(startDate, endDate, false, onDataFinish);
 	/*
 	$.APIgetJSON(apiHistoryUrl, APIkey, function(data) {
 		var messageLength = data.messages.length;	
@@ -157,7 +161,7 @@ if(plot_mode == "H" || plot_mode == "h") {
 		var sid = 0;
 		console.log("got " + messageLength + " messages in total");
 	});
-*/
+	*/
 } else {
 	/*
 	var realtimeAPIUrl = "https://realtime.opensensors.io/v1/events/topics//orgs/solentairwatch/sniffy";
@@ -188,7 +192,7 @@ function getJSONdata(url, getSpoof, callback) {
 		var messageLength = data.messages.length;	
 		var message = {};
 		var sid = 0;
-		console.log("got " + messageLength + " messages in total");
+		console.log("got " + messageLength + " message(s) in total");
 		var c = 0;
 		for (c = 0; c < messageLength; c++){
 			message = JSON.parse(data.messages[c].payload.text);
@@ -211,7 +215,7 @@ function getJSONdata(url, getSpoof, callback) {
 		}
 	});
 }
-
+/*
 function onDataFinish() {
 	//this gets called when all of the historical data is loaded
 	//let's plot it!
@@ -226,7 +230,7 @@ function onDataFinish() {
 		}
 	}
 }
-
+*/
 
 function setupLiveTokenListener() {
 	$.postJSON("https://api.opensensors.io/v1/login",
@@ -260,10 +264,14 @@ function setupLiveTokenListener() {
 				} else if ( eventnum == ignore + 1){
 					//log the first one we're plotting
 					//console.log(message);
-					processInitialDataChart("pm", 1, message, sid);
+					all_data.push(message);
+					updateChartDatasetsThenPlot();
+			//		processInitialDataChart("pm", 1, message, sid);
 				} else {
 					//update data
-					processStreamDataChart("pm", message, sid);
+					all_data.push(message);
+					updateChartDatasetsThenPlot();
+			//		processStreamDataChart("pm", message, sid);
 				}
 			}
 		}
@@ -301,6 +309,56 @@ function addDataPointWithID(chartid, readingName, IDpoint) {
 	IDrequestRender(cfg);
 }
 
+function updateChartDatasetsThenPlot() {
+	//this code updates the chart datasets using all_data and resamples.
+	//then it plots
+
+	var cfg = pmChartBySid[1];
+
+	if (cfg.timeout !== null) {
+		//console.log("updating already!");
+		// do nothing, there's a timeout already
+		return;
+	}
+
+	// there is no timeout, so set one
+	cfg.timeout = setTimeout(function(){
+		var sensors_plotted = [];
+		var chart = cfg.chart;
+		var datasets = chart.data.datasets;
+		console.log("now parsing " + all_data.length + " points");
+
+		for(var i in all_data) {
+			var message = all_data[i];
+			var datapoint = {x: message.time, y: message.PM25};
+			if (sensors_plotted.includes(message.id)) {
+				//we've plotted from this sensor before
+				datasets[datasets_existing_for.indexOf(message.id)].data.push(datapoint);
+			} else {
+				//new sensor id.
+				sensors_plotted.push(message.id);
+				//console.log(dataXy)
+				var dataset = getOrCreateDataset("pm", message.id, 1, "PM25");
+				dataset.data = [datapoint];
+			}
+		}
+
+		//now resample each one
+		for (var j in datasets){
+			datasets[j].data = dataResample(datasets[j].data);
+		}
+
+		//console.log("rendering");
+		chart.update(0, false);
+		cfg.timeout = null;
+
+	}, 500);
+
+
+
+
+}
+
 function IDrequestRender(cfg) {
 	// update all charts
 	if (cfg.timeout !== null) {
@@ -320,19 +378,23 @@ function IDrequestRender(cfg) {
 		//var dataset = chart.data.datasets[datasets_existing_for.indexOf(sid)];
 
 		var datasets = chart.data.datasets;
+		/*
+		 * the below uses the IDbuffer
 
 		//var data = dataset.data.slice();
 		for (var j in IDbuffer) {
 			datasets[datasets_existing_for.indexOf(IDbuffer[j].id)].data.push(IDbuffer[j].datapoint);
-			//data.push(buffer[j]);
+		//data.push(buffer[j]);
 		}
 
 		IDbuffer.length = 0;
-		/*
-		if (data.length > maxDataPointsInCharts) {
-			data = data.slice(data.length - maxDataPointsInCharts);
-		}
 		*/
+		//try instead to replot from the all_data array instead.
+
+		//now resample each one
+		for (var j in datasets){
+			datasets[j].data = dataResample(datasets[j].data);
+		}
 
 		/* this needs adapting somehow...
 		dataset.data = data;
@@ -343,6 +405,32 @@ function IDrequestRender(cfg) {
 
 	}, 500);
 }
+
+
+function dataResample(data_array) {
+	//this takes an array and interpolates if it has more that maxDataPointsInCharts elements
+//	console.log("Resampling!");
+	//the number of points
+	var N = data_array.length;
+	console.log("I was passed " + N + " points to resample");
+	if (N <= maxDataPointsInCharts) {
+		//nothing to do here
+		console.log("But that is fine.");
+		return data_array;
+	} else {
+		//work out how bad the situation is
+		//not particularly smooth behaviour but hey-ho.
+		var skip = Math.ceil(N / maxDataPointsInCharts);
+
+		var newArray = data_array.filter(function (element, index) {
+			return ( index % skip == 0);
+		});
+		console.log("I'm returning " + newArray.length + " points in total.");
+		return newArray;
+	}
+}
+
+
 
 //an array to keep track of which sensors have been given a dataset yet.
 //appended to in the order in which we create datasets!
