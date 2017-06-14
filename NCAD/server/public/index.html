@@ -1,8 +1,44 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
 <html><head>
-		<meta http-equiv="content-type" content="text/html; charset=ISO-8859-1"><title>Test Page</title>
+		<meta http-equiv="content-type" content="text/html; charset=ISO-8859-1">
+		<title>National Clean Air Day</title>
 
 		<style>
+@keyframes up-right {
+	0% {
+		transform: scale(1);
+		opacity: .25
+	}
+	50% {
+		transform: scale (1, 5);
+		opacity: 1;
+	}
+	100% {
+		transform: scale(1);
+		opacity: .25;
+	}
+}
+/*
+id 1 road
+id 3 pedes
+*/
+.circle {
+	border-radius: 50%;
+	width: 40px;
+	height: 40px;
+	opacity: .25;
+	position: fixed;
+	top: 50px;
+	left: 210px;
+	float: left;
+}
+.red {
+	background-color: red;
+	-webkit-animation: up-right 1s infinite;
+	-moz-animation: up-right 1s infinite;
+	-o-animation: up-right 1s infinite;
+	animation: up-right 1s infinite;
+}
 #body {
 	background-color: #ebebeb;
 }
@@ -20,20 +56,29 @@ iframe {
 	margin: 0 auto;
 }
 #chart_canvas {
-	margin: auto;
-	border: 3px solid #804600;
+	/*margin: auto;*/
+	margin: 50px auto;
+	/*border: 3px solid #804600;*/
+}
+#chart_text {
+	margin: -60px auto;
+	width: 350px;
+	/*margin-top -50px;*/
+	text-align: center;
+	font-weight: bold;
+	font-size: 150%
 }
 #main_header {
 	margin: 45px auto 100px;
 	text-align: center;
 }
 #chart_container {
-	margin: 0 auto;
+	margin: -40px auto;
 	border: 10px solid #bbc1cc;
 	overflow: hidden;
 	vertical-align: top;
-	width: 1000px;
-	height: 350px;
+	width: 1400px;
+	height: 400px;
 }
 #main_table {
 	border: none;
@@ -79,13 +124,16 @@ iframe {
 }
 #second_row{
 	display: block;
-	margin: 0 auto;
+	margin: -100 auto;
 	width: 1920px;
 	height: 600px;
 	text-align: center;
 }
 .tablediv {
 	display: inline-block;
+	margin-right: 10px;
+	margin-left: 10px;
+	margin-top: 20px;
 	/*margin: 0 auto;*/
 }
 #chart {
@@ -97,6 +145,7 @@ iframe {
 	<body>
 		<div id="logo container"><img id="solentlogo" src="whitelogo.png"><!--<h1 id="solentheader"><b>Solent Air Watch</b></h1>-->
 			<div id="main_header">
+				<div class="circle red"></div>
 				<h2 id="titleText">Live
 					Air Quality Monitoring, Westquay</h2>
 			</div>

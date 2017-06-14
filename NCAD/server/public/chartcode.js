@@ -26,7 +26,7 @@ function make_chart(id) {
 					// position: 'bottom',
 					time: {
 						displayFormats: {
-							//'millisecond': 'HH:MM:SS',
+							'millisecond': 'HH:MM:SS',
 							'second': 'HH:MM:SS',
 							'minute': 'HH:MM:SS',
 							'hour': 'HH:MM:SS',
@@ -71,21 +71,20 @@ for (var i=1;i<=1;i++) {
 	var el = document.createElement("div");
 	el.className="chart";
 
-	// sensor ID text
-	var txt = document.createElement("div");
-	txt.className = "chart_text";
-	//	txt.innerText = "Live sensor data";
-	el.appendChild(txt);
-
 	// canvas
 	var canvas = document.createElement("canvas");
 	el.appendChild(canvas);
 	canvas.className="chart_canvas";
 	canvas.id = "chart_canvas";
 	canvas.height = 300;
-	canvas.width = 900;
+	canvas.width = 1200;
 	chartsContainer.appendChild(el);
-
+	
+	// sensor ID text
+	var txt = document.createElement("div");
+	txt.id = "chart_text";
+	txt.innerText = "Live sensor data: PM 2.5";
+	el.appendChild(txt);
 }
 //add a single chart for now
 for (var i=1;i<=1;i++) {
@@ -151,8 +150,8 @@ var all_data = [];
 //and then process data
 if(plot_mode == "H" || plot_mode == "h") {
 	//plotting historical data
-	var startDate = "2017-06-13T00:00:00Z";
-	var endDate = "2017-06-13T03:40:00Z";
+	var startDate = "2017-06-13T03:00:00Z";
+	var endDate = "2017-06-13T03:20:00Z";
 	//third value:
 	//true: include spoof data
 	//false: don't include spoof data
@@ -457,7 +456,7 @@ function getOrCreateDataset(sensor_name, sensor_id, chartid, stream_name) {
 		label: sensor_id,
 		borderColor: cfg.color || "#000000",
 		backgroundColor: "transparent",
-		bezierCurve : false,
+		bezierCurve : true,
 		markerType : "None",
 		fill: false,
 		lineTension: 0,
