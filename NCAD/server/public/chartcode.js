@@ -1,5 +1,5 @@
 //by enabling this setting only sensors 1 and 3 will plot!
-var NCAD = false;
+var NCAD = true;
 var maxDataPointsInCharts = 1000;
 // this is a list of charts.
 var pmChartBySid = {};
@@ -100,7 +100,7 @@ for (var i=1;i<=1;i++) {
 	var txt = document.createElement("div");
 	txt.id = "xlabelLHS";
 	txt.className="xlabel";
-	/*txt.innerText = "";*/
+	/*txt.innerText = "test minutes ago";*/
 	el.appendChild(txt);
 }
 function formatText() {
