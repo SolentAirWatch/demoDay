@@ -1,11 +1,8 @@
+//by enabling this setting only sensors 1 and 3 will plot!
+var NCAD = false;
 var maxDataPointsInCharts = 1000;
 // this is a list of charts.
 var pmChartBySid = {};
-
-//this is a list of sensors which are sending data.
-//it is populated on the fly, as we receive data from the sensor.
-//it is found under message.id
-var sensors_active = {}
 
 function make_chart(id) {
 	//this function makes a blank chart with name "id".
@@ -18,9 +15,15 @@ function make_chart(id) {
 			scales: {
 				xAxes: [{
 					type: 'time',
+					/*
+					gridLines: {
+						color: "#000000"
+					},
+					*/
 					ticks: {
 						autoSkip: true,
 						maxRotation: 50,
+						display: false,
 						minRotation: 50
 					},
 					// position: 'bottom',
@@ -76,7 +79,7 @@ for (var i=1;i<=1;i++) {
 	el.appendChild(canvas);
 	canvas.className="chart_canvas";
 	canvas.id = "chart_canvas";
-	canvas.height = 300;
+	canvas.height = 240;
 	canvas.width = 1200;
 	chartsContainer.appendChild(el);
 
@@ -97,7 +100,6 @@ for (var i=1;i<=1;i++) {
 		"IDbuffer": []
 	}
 }
-//});
 
 //set up the event listener
 //so that we know when we first receive data
@@ -136,9 +138,7 @@ $.APIgetJSON = function(url, APIkey, callback) {
 
 //get plot_mode
 var plot_mode = "";
-while (!["H","L","h","l","d"].includes(plot_mode)) {
-	plot_mode = prompt("Plot (H)istorical or (L)ive data? Or 'd' for display.", "d");
-}
+plot_mode = prompt("Plot (H)istorical, (L)ive data, or (B)oth?", "d");
 
 var APIkey = "c26fa96c-16b8-4fe9-967d-bf0e14047f38";
 
@@ -146,17 +146,21 @@ var OpenSensorsUrl = "https://api.opensensors.io";
 var apiBaseUrl = "/v1/messages/topic//orgs/solentairwatch/sniffy?";
 //an array of all datapoints.
 var all_data = [];
+//how much time we plot on the x-axis
+var timePlotted = 0;
 //decide which plotting mode
 //and then process data
 if(plot_mode == "H" || plot_mode == "h") {
 	//plotting historical data
-	var startDate = "2017-06-13T20:00:00Z";
-	var endDate = "2017-06-13T23:20:00Z";
+	var startDate = prompt("enter start time:", "2017-06-13T20:00:00Z");
+	var endDate = prompt("enter end time:", "2017-06-13T23:20:00Z");
 	//third value:
 	//true: include spoof data
 	//false: don't include spoof data
-	getHistoricalData(startDate, endDate, true, updateChartDatasetsThenPlot);
+	getHistoricalData(startDate, endDate, false, updateChartDatasetsThenPlot);
 	//getHistoricalData(startDate, endDate, false, onDataFinish);
+	
+	//this way does not seem to work:
 	/*
 	$.APIgetJSON(apiHistoryUrl, APIkey, function(data) {
 		var messageLength = data.messages.length;	
@@ -178,8 +182,53 @@ if(plot_mode == "H" || plot_mode == "h") {
 	*/
 	//probably a bad idea...
 	var password = prompt("Enter opensensors password:", "");
+timePlotted = parseInt(prompt("How long should the x axis be, in minutes?", "30"));
 	//get the token, and on response set up event listener
 	setupLiveTokenListener();
+} else if(plot_mode == "B" || plot_mode == "b") {
+	//we ask how far back then carry on plotting
+	var gap = prompt("How far back do you want to plot? Answer in the format HH:MM.","00:30");
+	var password = prompt("Enter opensensors password:", "");
+	if (gap.includes(":")) {
+		var colon_pos = 0;
+		var currentletter = 0;
+		for(currentletter = 0; currentletter < gap.length; currentletter++){
+			if (gap[currentletter] == ":"){
+				colon_pos = currentletter;
+			}
+		}
+		var hours = gap.slice(0,colon_pos);
+		var mins = gap.slice(colon_pos+1, gap.length);
+		gap = parseInt(gap.slice(0,colon_pos))*60+parseInt(gap.slice(colon_pos+1, gap.length));
+		console.log("that gives " + gap + "mins");
+	} else {
+		var hours = 0;
+		var mins = 30;
+		gap = 30;
+	}
+	//get the time now
+	var now = new Date();
+	var startDate = new Date(now - gap * 60000);
+	timePlotted = gap;
+	console.log("we are asking for a startDate of");
+	console.log(dateFormat(startDate));
+
+	//get the data, and then start listening for more
+	getHistoricalData(dateFormat(startDate), dateFormat(now), false, setupLiveTokenListener);
+}
+
+function dateFormat (d) {
+	//d is a date object.
+	//this formats for opensensors
+	return d.getFullYear()+'-'+pad(d.getMonth()+1)+'-'+pad(d.getDate())+'T'+pad(d.getHours())+':'+pad(d.getMinutes())+':'+pad(d.getSeconds())+'Z';
+}
+function pad (int) {
+	//opensensors doens't like single digits
+	if (int > 9) {
+		return int;
+	} else {
+		return "0"+int;
+	}
 }
 
 function getHistoricalData(startDate, endDate, getSpoof, callback) {
@@ -335,17 +384,23 @@ function updateChartDatasetsThenPlot() {
 		for(var i in all_data) {
 			var message = all_data[i];
 			var datapoint = {x: message.time, y: message.PM25};
-			//var sid = message.id;
+			var sid = message.id;
 
-			//for clean air day we are only plotting ids 1 and 3
-			//id 1: road
-			//id 3: pedes
+			if (NCAD) {
+				//for clean air day we are only plotting ids 1 and 3
+				//id 1: road
+				//id 3: pedes
+				if (![1,3].includes(sid)){
+					continue;
+				}
+			}
 			/*
-			if (![1,3].includes(sid)){
-				continue;
+			if(Math.random() > 0.5 ) {
+				sid =1;
+			} else {
+				sid=3;
 			}
 			*/
-			sid = Math.floor(Math.random()*2);
 
 			if (sensors_plotted.includes(sid)) {
 				//we've plotted from this sensor before
@@ -469,12 +524,19 @@ function getOrCreateDataset(sensor_name, sensor_id, chartid, stream_name) {
 
 	console.log("first data from " + sensor_id)
 	// not found, create it (didn't return in the check above)
+	var color = "#000000";
+
+	if (NCAD) {
+		if (![1,3].includes(sensor_id)){
+			color = NCAD_color[sensor_id];
+		}
+	}
 	var dts = {
 		data: [],
 		label: sensor_id,
-		borderColor: NCAD_color[sensor_id],
+		borderColor: color,
 		backgroundColor: "transparent",
-		bezierCurve : true,
+		bezierCurve : false,
 		markerType : "None",
 		fill: false,
 		lineTension: 0,
