@@ -19,9 +19,9 @@
 	}
 }
 /*
-id 1 road
-id 3 pedes
-*/
+	id 1 road
+	id 3 pedes
+ */
 .circle {
 	border-radius: 50%;
 	width: 40px;
@@ -144,6 +144,29 @@ iframe {
 	/*width: 600px;*/
 	/*height: 200px;*/
 }
+	#key {
+		margin-right: auto;
+		margin-left: auto;
+		display: block;
+		margin-top: -200px;
+		width: 300px;
+		height: 83px;
+		border: 3px solid #330000;
+	}
+	.key_element {
+		display: inline-block;
+		/*text-align: center;*/
+		/*font-weight: bold;*/
+		font-size: 120%
+	}
+	.key_text {
+		margin: -90px auto;
+		width: 250px;
+		transform: translate(8px, 0px)
+	}
+	.key_svg {
+		transform: translate(10px, 10px)
+	}
 		</style>
 	</head>
 	<body>
@@ -159,6 +182,24 @@ iframe {
 			<div class="tablediv"><iframe class="table_element" src="https://www.youtube.com/embed/tQXmsZ_ph88?&amp;autoplay=1" allowfullscreen="" frameborder="0" height="315" width="560"></iframe></div>
 			<div class="tablediv table_element" id="soton_image_container"><img src="crop_soton.png" id="soton_image"> </div>
 			<div class="tablediv"><iframe class="table_element" src="https://www.youtube.com/embed/tQXmsZ_ph88?&amp;autoplay=1" allowfullscreen="" frameborder="0" height="315" width="560"></iframe></div>
+		</div>
+		<div id="key">
+			<div class="key_element">
+				<svg class="key_svg" width="30" height="30">
+					<rect width="25" height="25" style="fill:rgb(255,125,9);stroke-width:1;stroke:rgb(0,0,0)" />
+				</svg>
+				<div class="key_element key_text">
+					  Portland Terrace	
+				</div>
+			</div>
+			<div class="key_element">
+				<svg class="key_svg" width="30" height="30">
+					<rect width="25" height="25" style="fill:rgb(248,251,13);stroke-width:1;stroke:rgb(0,0,0)" />
+				</svg>
+				<div class="key_element key_text">
+					  Above Bar Street
+				</div>
+			</div>
 		</div>
 		<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.5.0/Chart.bundle.min.js"></script>
 		<script src="http://d3js.org/d3.v3.min.js" charset="utf-8"></script>
