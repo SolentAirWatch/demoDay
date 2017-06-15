@@ -88,6 +88,26 @@ for (var i=1;i<=1;i++) {
 	txt.id = "chart_text";
 	txt.innerText = "Live sensor data: PM 2.5";
 	el.appendChild(txt);
+
+	// right hand label
+	var txt = document.createElement("div");
+	txt.id = "xlabelRHS";
+	txt.className="xlabel";
+	txt.innerText = "now";
+	el.appendChild(txt);
+
+	// left hand label
+	var txt = document.createElement("div");
+	txt.id = "xlabelLHS";
+	txt.className="xlabel";
+	/*txt.innerText = "";*/
+	el.appendChild(txt);
+}
+function formatText() {
+	//this gets called later on, when we know
+	//what the LHS of the plot should say
+	var txt = document.getElementById("xlabelLHS");
+	txt.innerText = timePlotted + " minutes ago";
 }
 //add a single chart for now
 for (var i=1;i<=1;i++) {
@@ -183,6 +203,8 @@ if(plot_mode == "H" || plot_mode == "h") {
 	//probably a bad idea...
 	var password = prompt("Enter opensensors password:", "");
 timePlotted = parseInt(prompt("How long should the x axis be, in minutes?", "30"));
+	//this updates the LHS of the graph
+	formatText();
 	//get the token, and on response set up event listener
 	setupLiveTokenListener();
 } else if(plot_mode == "B" || plot_mode == "b") {
@@ -210,6 +232,8 @@ timePlotted = parseInt(prompt("How long should the x axis be, in minutes?", "30"
 	var now = new Date();
 	var startDate = new Date(now - gap * 60000);
 	timePlotted = gap;
+	//this updates the LHS of the graph
+	formatText();
 	console.log("we are asking for a startDate of");
 	console.log(dateFormat(startDate));
 
@@ -380,11 +404,28 @@ function updateChartDatasetsThenPlot() {
 		var chart = cfg.chart;
 		var datasets = chart.data.datasets;
 		console.log("now parsing " + all_data.length + " points");
+		//get the time right now
+		var now = new Date();
+		var now_milli = now.getTime();
 
 		for(var i in all_data) {
 			var message = all_data[i];
 			var datapoint = {x: message.time, y: message.PM25};
 			var sid = message.id;
+			if(timePlotted > 0) {
+				//need to prune here
+				//note timePlotted is in Minutes
+
+				//work out when it arrived
+				//add an hour since the raspberries are an hour off!
+				var arrivalTime = Date.parse(datapoint.x) + 60*60*1000;
+				//now check if it is too old or not
+				if( now_milli - arrivalTime > timePlotted*60*1000 ) {
+					//oops, this one is too old.
+					continue;
+				}
+
+			}
 
 			if (NCAD) {
 				//for clean air day we are only plotting ids 1 and 3
