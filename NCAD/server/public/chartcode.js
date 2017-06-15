@@ -79,7 +79,7 @@ for (var i=1;i<=1;i++) {
 	canvas.height = 300;
 	canvas.width = 1200;
 	chartsContainer.appendChild(el);
-	
+
 	// sensor ID text
 	var txt = document.createElement("div");
 	txt.id = "chart_text";
@@ -150,8 +150,8 @@ var all_data = [];
 //and then process data
 if(plot_mode == "H" || plot_mode == "h") {
 	//plotting historical data
-	var startDate = "2017-06-13T03:00:00Z";
-	var endDate = "2017-06-13T03:20:00Z";
+	var startDate = "2017-06-13T20:00:00Z";
+	var endDate = "2017-06-13T23:20:00Z";
 	//third value:
 	//true: include spoof data
 	//false: don't include spoof data
@@ -335,14 +335,26 @@ function updateChartDatasetsThenPlot() {
 		for(var i in all_data) {
 			var message = all_data[i];
 			var datapoint = {x: message.time, y: message.PM25};
-			if (sensors_plotted.includes(message.id)) {
+			//var sid = message.id;
+
+			//for clean air day we are only plotting ids 1 and 3
+			//id 1: road
+			//id 3: pedes
+			/*
+			if (![1,3].includes(sid)){
+				continue;
+			}
+			*/
+			sid = Math.floor(Math.random()*2);
+
+			if (sensors_plotted.includes(sid)) {
 				//we've plotted from this sensor before
-				datasets[datasets_existing_for.indexOf(message.id)].data.push(datapoint);
+				datasets[datasets_existing_for.indexOf(sid)].data.push(datapoint);
 			} else {
 				//new sensor id.
-				sensors_plotted.push(message.id);
+				sensors_plotted.push(sid);
 				//console.log(dataXy)
-				var dataset = getOrCreateDataset("pm", message.id, 1, "PM25");
+				var dataset = getOrCreateDataset("pm", sid, 1, "PM25");
 				dataset.data = [datapoint];
 			}
 		}
@@ -434,7 +446,11 @@ function dataResample(data_array) {
 	}
 }
 
-
+//colour according to sensor id.
+var NCAD_color = {
+	1 : "#ff7d09",
+	3 : "#f8f8b0"
+}
 
 //an array to keep track of which sensors have been given a dataset yet.
 //appended to in the order in which we create datasets!
@@ -444,6 +460,8 @@ var datasets_existing_for = [];
 function getOrCreateDataset(sensor_name, sensor_id, chartid, stream_name) {
 	var cfg = pmChartBySid[chartid];
 	//console.log(cfg);
+
+
 	var chart = cfg.chart;
 	if (datasets_existing_for.includes(sensor_id)) {
 		return chart.data.datasets[datasets_existing_for.indexOf(sensor_id)];
@@ -454,7 +472,7 @@ function getOrCreateDataset(sensor_name, sensor_id, chartid, stream_name) {
 	var dts = {
 		data: [],
 		label: sensor_id,
-		borderColor: cfg.color || "#000000",
+		borderColor: NCAD_color[sensor_id],
 		backgroundColor: "transparent",
 		bezierCurve : true,
 		markerType : "None",

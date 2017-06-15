@@ -23,13 +23,14 @@
 	id 3 pedes
  */
 .circle {
+	/*TODO: move circle! */
 	border-radius: 50%;
 	width: 40px;
 	height: 40px;
 	opacity: .25;
 	position: fixed;
 	top: 50px;
-	left: 210px;
+	left: 410px;
 	float: left;
 }
 .red {
@@ -170,7 +171,7 @@ iframe {
 		</style>
 	</head>
 	<body>
-		<div id="logo container"><img id="solentlogo" src="whitelogo.png"><!--<h1 id="solentheader"><b>Solent Air Watch</b></h1>-->
+		<div id="logo_container"><img id="solentlogo" src="whitelogo.png"><!--<h1 id="solentheader"><b>Solent Air Watch</b></h1>-->
 			<div id="main_header">
 				<div class="circle red"></div>
 				<h2 id="titleText">Live
@@ -186,10 +187,11 @@ iframe {
 		<div id="key">
 			<div class="key_element">
 				<svg class="key_svg" width="30" height="30">
-					<rect width="25" height="25" style="fill:rgb(255,125,9);stroke-width:1;stroke:rgb(0,0,0)" />
+					<rect width="25" height="25" style="fill:rgb(255,125,9);stroke-width:1;stroke:rgb(0,0,0)" >
+					</rect>
 				</svg>
 				<div class="key_element key_text">
-					  Portland Terrace	
+					Portland Terrace	
 				</div>
 			</div>
 			<div class="key_element">
@@ -197,13 +199,12 @@ iframe {
 					<rect width="25" height="25" style="fill:rgb(248,251,13);stroke-width:1;stroke:rgb(0,0,0)" />
 				</svg>
 				<div class="key_element key_text">
-					  Above Bar Street
+					Above Bar Street
 				</div>
 			</div>
 		</div>
-		<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.5.0/Chart.bundle.min.js"></script>
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.5.0/Chart.bundle.min.js"></script>
 		<script src="http://d3js.org/d3.v3.min.js" charset="utf-8"></script>
 		<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
-
 		<script src="chartcode.js"></script>
 	</body></html>
