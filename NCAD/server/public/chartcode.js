@@ -1,5 +1,5 @@
 //by enabling this setting only sensors 1 and 3 will plot!
-var NCAD = true;
+var NCAD = false;
 var maxDataPointsInCharts = 1000;
 // this is a list of charts.
 var pmChartBySid = {};
@@ -45,7 +45,7 @@ function make_chart(id) {
 					display: true,
 					ticks: {
 						beginAtZero: true,// minimum value will be 0. 
-						suggestedMax: 120
+						suggestedMax: 40
 					}
 				}]
 			},
@@ -124,7 +124,7 @@ for (var i=1;i<=1;i++) {
 //set up the event listener
 //so that we know when we first receive data
 var token ="";
-var password = "";
+var password = prompt("Enter Opensensors password: ");
 var eventnum = 1;
 $.postJSON = function(url, data, callback) {
 	return jQuery.ajax({
@@ -158,7 +158,7 @@ $.APIgetJSON = function(url, APIkey, callback) {
 
 //get plot_mode
 var plot_mode = "";
-plot_mode = prompt("Plot (H)istorical, (L)ive data, or (B)oth?", "d");
+plot_mode = prompt("Plot (H)istorical, (L)ive data, or (B)oth?", "b");
 
 var APIkey = "c26fa96c-16b8-4fe9-967d-bf0e14047f38";
 
@@ -201,7 +201,7 @@ if(plot_mode == "H" || plot_mode == "h") {
 	});
 	*/
 	//probably a bad idea...
-	var password = prompt("Enter opensensors password:", "");
+	//var password = prompt("Enter opensensors password:", "");
 timePlotted = parseInt(prompt("How long should the x axis be, in minutes?", "30"));
 	//this updates the LHS of the graph
 	formatText();
@@ -209,8 +209,8 @@ timePlotted = parseInt(prompt("How long should the x axis be, in minutes?", "30"
 	setupLiveTokenListener();
 } else if(plot_mode == "B" || plot_mode == "b") {
 	//we ask how far back then carry on plotting
-	var gap = prompt("How far back do you want to plot? Answer in the format HH:MM.","00:30");
-	var password = prompt("Enter opensensors password:", "");
+	var gap = prompt("How far back do you want to plot? Answer in the format HH:MM.","00:02");
+	//var password = prompt("Enter opensensors password:", "");
 	if (gap.includes(":")) {
 		var colon_pos = 0;
 		var currentletter = 0;
