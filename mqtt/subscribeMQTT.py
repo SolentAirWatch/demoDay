@@ -33,8 +33,8 @@ def on_message(client, userdata, msg):
                                              data["longitude"], data["PM10"], data["PM25"], data["PM1"]))
     db.commit()
 
-client = mqtt.Client(client_id="6423")
-client.username_pw_set("solentairwatch", password="aLmgqJPH")
+client = mqtt.Client(client_id="xxxx")
+client.username_pw_set("solentairwatch", password="xxxx")
 
 # set MQTT call back functions
 client.on_connect = on_connect
