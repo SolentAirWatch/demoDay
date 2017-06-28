@@ -124,7 +124,7 @@ for (var i=1;i<=1;i++) {
 //set up the event listener
 //so that we know when we first receive data
 var token ="";
-var password = prompt("Enter Opensensors password: ");
+var password = "";
 var eventnum = 1;
 $.postJSON = function(url, data, callback) {
 	return jQuery.ajax({
