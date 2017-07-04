@@ -1,0 +1,231 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html><head>
+		<meta http-equiv="content-type" content="text/html; charset=ISO-8859-1">
+		<title>National Clean Air Day</title>
+
+		<style>
+@keyframes up-right {
+	0% {
+		transform: scale(1);
+		opacity: .25
+	}
+	50% {
+		transform: scale (1, 5);
+		opacity: 1;
+	}
+	100% {
+		transform: scale(1);
+		opacity: .25;
+	}
+}
+/*
+	id 1 road
+	id 3 pedes
+ */
+.circle {
+	/*TODO: move circle! */
+	border-radius: 50%;
+	width: 40px;
+	height: 40px;
+	opacity: .25;
+	position: fixed;
+	top: 59px;
+	left: 410px;
+	float: left;
+}
+.red {
+	background-color: red;
+	-webkit-animation: up-right 1s infinite;
+	-moz-animation: up-right 1s infinite;
+	-o-animation: up-right 1s infinite;
+	animation: up-right 1s infinite;
+}
+#body {
+	background-color: #ebebeb;
+}
+html * {
+	font-family: Helvetica ! important;
+}
+#solentheader {
+	margin: 45px auto 35px;
+	font-size: 80px;
+}
+.table_element {
+	border: 4px solid #330000;
+}
+iframe {
+	margin: 0 auto;
+}
+#chart_canvas {
+	/*margin: auto;*/
+	margin: 50px auto;
+	/*border: 3px solid #804600;*/
+}
+#chart_text {
+	margin: -15px auto;
+	width: 350px;
+	/*margin-top -50px;*/
+	text-align: center;
+	font-weight: bold;
+	font-size: 150%
+}
+#main_header {
+	margin: 45px auto 100px;
+	text-align: center;
+}
+#chart_container {
+	margin: -55px auto;
+	/*margin: -40px 0 40px 520px;*/
+	border: 10px solid #bbc1cc;
+	overflow: hidden;
+	vertical-align: top;
+	width: 1400px;
+	height: 400px;
+}
+#main_table {
+	border: none;
+	/*margin: -10px auto;*/
+	text-align: center;
+	width: 1920px;
+	height: 600px;
+	/*float: center;*/
+}
+#soton_image_container {
+	width: 560px;
+	height: 315px;
+	overflow: hidden;
+	margin: 0 auto;
+}
+#soton_image_old {
+	margin: -300px 0px 0px -650px;
+	zoom: 90%;
+	/*position: fixed;*/
+	/*width: 100%;*/
+	/*object-fit: cover;*/
+}
+#soton_image {
+	/*position: fixed;*/
+	/*width: 100%;*/
+	/*object-fit: cover;*/
+}
+#solentlogo {
+	position: fixed;
+	top: 10px;
+	left: 10px;
+	width: 200px;
+	height: auto;
+	float: left;
+}
+#titleText {
+	color: #333333;
+	font-size: 3.5em;
+	text-transform: none;
+	font-style: normal;
+	font-weight: bolder;
+}
+#second_row{
+	display: block;
+	/*margin: 100 auto;*/
+	margin-right: auto;
+	margin-left: auto;
+	margin-top: 60px;
+
+	width: 1850px;
+	height: 400px;
+	text-align: center;
+}
+.tablediv {
+	display: inline-block;
+	margin-right: 10px;
+	margin-left: 10px;
+	margin-top: 20px;
+	/*margin: 0 auto;*/
+}
+#chart {
+	/*width: 600px;*/
+	/*height: 200px;*/
+}
+	#key {
+		margin-right: auto;
+		margin-left: auto;
+		display: block;
+		margin-top: -240px;
+		width: 300px;
+		height: 83px;
+		border: 3px solid #330000;
+	}
+	.key_element {
+		display: inline-block;
+		/*text-align: center;*/
+		/*font-weight: bold;*/
+		font-size: 120%;
+	}
+	.key_text {
+		margin: -100px auto;
+		width: 250px;
+		transform: translate(8px, 0px)
+	}
+	.key_svg {
+		transform: translate(10px, 10px)
+	}
+	.xlabel {
+		font-size: 110%;
+	}
+	#xlabelLHS {
+	/*margin: -30px auto;*/
+	margin-top: -10px;
+	margin-left: 100px;
+	text-align: left;
+	font-weight: bold;
+	font-size: 120%;
+	width: 150px;
+	}
+	#xlabelRHS {
+	/*margin: -30px auto;*/
+	margin-top: -50px;
+	margin-right: 100px;
+	text-align: right;
+	font-weight: bold;
+	font-size: 120%
+	width: 150px;
+	}
+		</style>
+	</head>
+	<body>
+		<div id="logo_container"><img id="solentlogo" src="whitelogo.png"><!--<h1 id="solentheader"><b>Solent Air Watch</b></h1>-->
+			<div id="main_header">
+				<div class="circle red"></div>
+				<h2 id="titleText">Live
+					Air Quality Monitoring</h2>
+			</div>
+		</div>
+		<div id="chart_container"><!-- where the chart goes--></div>
+		<div id="second_row">
+			<div class="tablediv"><iframe class="table_element" src="https://www.youtube.com/embed/24EQf33wYW0?&amp;autoplay=1" allowfullscreen="" frameborder="0" height="315" width="560"></iframe></div>
+			<!--<div class="tablediv table_element" id="soton_image_container"><img src="crop_soton.png" id="soton_image"> </div>-->
+			<!--<div class="tablediv"><iframe class="table_element" src="https://www.youtube.com/embed/tQXmsZ_ph88?&amp;autoplay=1" allowfullscreen="" frameborder="0" height="315" width="560"></iframe></div>-->
+		</div>
+		<!--<div id="key">
+			<div class="key_element">
+				<svg class="key_svg" width="30" height="30">
+					<rect width="25" height="25" style="fill:rgb(255,125,9);stroke-width:1;stroke:rgb(0,0,0)" >
+					</rect>
+				</svg>
+				<div class="key_element key_text">
+					Portland Terrace	
+				</div>
+			</div>
+			<div class="key_element">
+				<svg class="key_svg" width="30" height="30">
+					<rect width="25" height="25" style="fill:rgb(248,251,13);stroke-width:1;stroke:rgb(0,0,0)" />
+				</svg>
+				<div class="key_element key_text">
+					Above Bar Street
+				</div>
+			</div>
+		</div>-->
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.5.0/Chart.bundle.min.js"></script>
+		<script src="http://d3js.org/d3.v3.min.js" charset="utf-8"></script>
+		<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+		<script src="chartcode.js"></script>
+	</body></html>
