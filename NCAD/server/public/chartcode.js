@@ -255,6 +255,8 @@ function pad (int) {
 	}
 }
 
+//////////////////////////////////////////////////////////////
+///////// THIS GETS THE DATA BETWEEN START AND END DATA///////
 function getHistoricalData(startDate, endDate, getSpoof, callback) {
 	//if getSpoof is false we ignore sids which are negative
 	//opensensors won't send all data at once, it will give url to next one.

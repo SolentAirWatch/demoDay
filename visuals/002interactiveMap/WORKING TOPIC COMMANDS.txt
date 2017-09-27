@@ -1,0 +1,7 @@
+20984f6f-0c5c-40bc-850b-23d59533db7f
+
+
+
+curl -X GET --header "Accept: application/json" --header "Authorization: api-key 20984f6f-0c5c-40bc-850b-23d59533db7f" "https://realtime.opensensors.io/v1/events/orgs/solentairwatch/topics"
+
+curl -X GET --header "Accept: application/json" --header "Authorization: api-key 20984f6f-0c5c-40bc-850b-23d59533db7f" "https://realtime.opensensors.io/v1/events/topics//orgs/solentairwatch/sniffy"

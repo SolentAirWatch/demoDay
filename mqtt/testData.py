@@ -10,8 +10,8 @@ import datetime
 # dont run for too long as the time index is unbound - memory leaks ahoy!!!
 broker = "mqtt.opensensors.io"  # "46.101.13.195"     # test broker
 topic = "/orgs/solentairwatch/sniffy"
-monitorID1 = '0'  # id 0 is reserved for test
-monitorID2 = '1'  # id 0 is reserved for test
+monitorID1 = '-1'  # negative id shows spoof data
+monitorID2 = '-2'  # negative id shows spoof data
 monitorLocation = [50.9262, -1.4092]
 global t
 global ts
